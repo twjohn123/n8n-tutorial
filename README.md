@@ -1,5 +1,6 @@
 n8n技術文章
 ============
+**⚠️注意：本教學將在Windows 11系統上執行。**
 
 摘要(Abstract)
 ------------
@@ -18,66 +19,70 @@ n8n技術文章
 
 目錄(Catalog)
 -------------
-1. [n8n的安裝和部署教學](#deployment)
+### 1. [n8n的安裝和部署教學](#deployment)
 
-    * 本地Docker安裝
-    * 本地n8n安裝
-    * 本地PostgreSQL安裝
-    * n8n和PostgreSQL的連接教學
+* 本地Docker安裝
+* 本地n8n安裝
+* 本地PostgreSQL安裝
+* n8n和PostgreSQL的連接教學
 
+### 2. n8n的基本節點和工作流認識
 
-2. n8n的基本節點和工作流認識
+* 各節點的介紹和操作實例
+* Credential的介紹和設置
+* 簡易工作流的介紹與示範
 
-    * 各節點的介紹和操作實例
-    * Credential的介紹和設置
-    * 簡易工作流的介紹與示範
+### 3. 資料庫的基本節構和功能
 
+* PostgreSQL的節構介紹
+* PostgreSQL的欄位和規則建立
+* PostgreSQL的資料導入和刪除
+* PostgreSQL的資料查詢
 
-3. 資料庫的基本節構和功能
+### 4. 系統的架構和設計
 
-    * PostgreSQL的節構介紹
-    * PostgreSQL的欄位和規則建立
-    * PostgreSQL的資料導入和刪除
-    * PostgreSQL的資料查詢
+* 工作流1：資料傳進資料庫的具體架構
+* 工作流2：篩選條件和寄送信件的具體架構
 
+### 5. 校務自動化的應用實例
 
-4. 系統的架構和設計
+* 系統的執行結果
+* 可行的系統擴充和延伸
 
-    * 工作流1：資料傳進資料庫的具體架構
-    * 工作流2：篩選條件和寄送信件的具體架構
+### 6. 工作流的匯出與重新部屬
 
+* 工作流的匯出
+* 工作流的重新導入
+* Credential的重新設置
 
+### 7. 結語：n8n的校務價值和創新可能性
 
-5. 校務自動化的應用實例
+* 低程式碼和與AI結合的優勢
+* 未來可行的應用場景
 
-    * 系統的執行結果
-    * 可行的系統擴充和延伸
+### 8. 附錄
 
-
-6. 工作流的匯出與重新部屬
-
-    * 工作流的匯出
-    * 工作流的重新導入
-    * Credential的重新設置
-
-
-7. 結語：n8n的校務價值和創新可能性
-
-    * 低程式碼和與AI結合的優勢
-    * 未來可行的應用場景
-
-
-8. 附錄
-
-    * 工作流1：Upload.json
-    * 工作流2：Send.json
-
+* 工作流1：Upload.json
+* 工作流2：Send.json
 
 
 <h2 id="deployment">n8n的安裝和部署教學</h2>
 
 ### 本地Docker安裝
-首先到[Docker官網][docker_url]下載Docker。
 
+首先到[Docker官網][docker_url]，找到**Download Docker Desktop**，接著點擊**Download for Windows - AMD64**來下載Docker。
 
   [docker_url]: https://www.docker.com/
+<img width="1465" height="924" alt="image" src="https://github.com/user-attachments/assets/b23d5106-27a5-42f1-ac4a-0298262ffe30" />
+
+開啟下載好的安裝檔，接著按OK，之後便等待Docker安裝完成。
+
+<img width="871" height="604" alt="image" src="https://github.com/user-attachments/assets/66e00797-984a-4682-bc77-580023868317" />
+
+安裝完成後，開啟Docker Desktop，選擇**Accept**，接著選擇**Personal**，然後便登入或註冊帳號(也可以選擇Skip)，如此本地Docker便安裝完成了。
+
+<img width="1571" height="887" alt="image" src="https://github.com/user-attachments/assets/c4be5b19-6dc6-4497-93f4-17303fd22651" />
+
+### 本地n8n安裝
+
+首先打開Windows的**命令提示字元**(可以在搜尋欄中輸入cmd來開啟)，
