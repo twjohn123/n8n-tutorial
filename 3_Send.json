@@ -1,0 +1,682 @@
+{
+  "name": "3_Send",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "format": "custom",
+        "customFormat": "yyyy/M",
+        "outputFieldName": "roc_date",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        32,
+        64
+      ],
+      "id": "784b9380-4000-411c-99fb-bbc4ad8be476",
+      "name": "ROC Date"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "format": "custom",
+        "customFormat": "M月",
+        "outputFieldName": "roc_month",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        32,
+        352
+      ],
+      "id": "a1d86fdc-8823-44e4-b271-423ed07bbf96",
+      "name": "ROC Month"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 4,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        320,
+        272
+      ],
+      "id": "bc8732e9-e02c-488c-841b-35ffce2696b0",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "content": "## Date Config",
+        "height": 640,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "d96b7ed7-2ea0-4e73-93cf-33fd0b4be0bc",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        720,
+        528
+      ],
+      "id": "cdd04708-6c6a-44bd-ba98-1e760048402c",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 取得所有輸入項目，確保它是一個陣列\nconst items = $input.all(); \n\n// 使用 .map() 遍歷陣列中的每一個項目\nreturn items.map(item => {\n    // === 您的民國年邏輯放在這裡 ===\n    \n    // 存取前一個 Date & Time 節點的輸出資料\n    // 請確認前一個節點輸出資料的欄位名稱 (例如：formattedDate)\n    const inputDate = item.json.roc_date; \n    \n    // 分割年/月\n    const [year, month] = inputDate.split('/');\n    \n    // 計算民國年 (西元年 - 1911)\n    const rocYear = parseInt(year) - 1911;\n    \n    // 將計算結果寫入新的欄位\n    item.json.roc_date = `${rocYear}年${month}月`;\n    \n    // 回傳處理後的項目\n    return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        64
+      ],
+      "id": "6d72ab2c-11a0-4368-9eac-753de1c6d9a9",
+      "name": "AD to ROC"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "format": "custom",
+        "customFormat": "MMMM yyyy",
+        "outputFieldName": "ad_date",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        32,
+        208
+      ],
+      "id": "e10e8d4d-ac6e-40da-ab88-84787592decd",
+      "name": "AD Date"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "format": "custom",
+        "customFormat": "MMMM",
+        "outputFieldName": "ad_month",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        32,
+        496
+      ],
+      "id": "4a450f63-15fe-4ac3-9d69-6b2c17915f5d",
+      "name": "AD Month"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        720,
+        848
+      ],
+      "id": "91f30fd8-f0aa-4b22-86be-007b6a26e1f8",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1312,
+        528
+      ],
+      "id": "b20b135f-c360-4d57-9ada-03d10f2ee52b",
+      "name": "Wait 1",
+      "webhookId": "ee427732-cb64-4267-9819-6b0643a27c56"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1312,
+        848
+      ],
+      "id": "76f9b7b8-4c27-4422-b34c-9d59b11ec3de",
+      "name": "Wait 2",
+      "webhookId": "ee427732-cb64-4267-9819-6b0643a27c56"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        928,
+        528
+      ],
+      "id": "a136f830-965f-4442-842e-1ecda1cf0fd0",
+      "name": "Loop Over Items 1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        928,
+        848
+      ],
+      "id": "849336b2-7e41-4ae2-831c-8d44b0fbdd5e",
+      "name": "Loop Over Items 2"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "part_time_main_info",
+          "mode": "list",
+          "cachedResultName": "part_time_main_info"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "name",
+              "condition": "IS NOT NULL"
+            },
+            {
+              "column": "email",
+              "condition": "IS NOT NULL"
+            },
+            {
+              "column": "send_email_flag",
+              "value": "TRUE"
+            }
+          ]
+        },
+        "options": {
+          "outputColumns": [
+            "name",
+            "email",
+            "project_code",
+            "project_name"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        32,
+        688
+      ],
+      "id": "9eee1f51-2482-401b-ae5a-cb8b95887049",
+      "name": "取得合法助理資訊",
+      "credentials": {
+        "postgres": {
+          "id": "tsfz6Zcekq5PV3Z6",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT DISTINCT ON (t1.project_host)\n    t1.project_host,    -- 選取 part_time_main_info (t1) 的所有欄位\n    t2.host_email       -- 選取 project_host_info (t2) 的 host_email 欄位\nFROM\n    part_time_main_info t1\nLEFT JOIN\n    project_host_info t2 ON t1.project_host = t2.host_name\nWHERE\n    t1.send_email_flag = TRUE  -- 是否對其寄送email\nORDER BY\n    t1.project_host,\n    t1.created_at DESC; -- 根據 created_at DESC 排序，確保選取的是該主持人的最新記錄",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        32,
+        848
+      ],
+      "id": "85016632-b8fa-455b-b1f6-0d88aa686ddc",
+      "name": "取得不重複之合法教授資訊",
+      "credentials": {
+        "postgres": {
+          "id": "tsfz6Zcekq5PV3Z6",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "=【溫馨提醒】敬請您完成{{ $json.roc_date }}份研究計畫薪資流程，感謝您的協助。 [Gentle Reminder] Kindly complete the salary process for the {{ $json.ad_date }} research project. Thank you for your cooperation",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<title>研究計畫薪資流程溫馨提醒</title>\n</head>\n<body style=\"font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;\">\n  <div style=\"max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; background-color: #f9f9f9;\">\n    \n    <p>親愛的{{ $json.name }}助理，您好：</p>\n    <p>提醒您完成{{ $json.roc_date }}兼任助理薪資造冊作業。</p>\n    \n    <p style=\"background-color: #eee; padding: 10px; border-radius: 5px;\">\n      計畫編號： {{ $json.project_code }}<br>\n      計畫名稱： {{ $json.project_name }}\n    </p>\n\n    <p>請依照以下流程至 <a href=\"https://lms.ntpu.edu.tw/site/assistant\" style=\"color: #007bff; text-decoration: underline;\">「兼職人員保險管理系統」1.5兼職助理勞健保整合系統_登入網址</a> 操作， <strong>請勿自行造冊</strong>，謝謝您！</p>\n\n    <p style=\"font-weight: bold; margin-top: 20px; color: #0056b3;\">作業流程：</p>\n    <ol style=\"padding-left: 20px; margin: 0 0 20px 0;\">\n      <li style=\"margin-bottom: 10px;\"><strong>受聘助理：</strong> 登入系統 →「聘僱文件填報」→ 填寫{{ $json.roc_month }}份工時表／進度報告</li>\n      <li style=\"margin-bottom: 10px;\"><strong>受聘助理：</strong> 點選「送審」送交計畫主持人</li>\n      <li style=\"margin-bottom: 10px;\"><strong>計畫主持人：</strong> 登入「聘僱文件填報管理」→ 審核{{ $json.roc_month }}份資料</li>\n      <li style=\"margin-bottom: 10px;\"><strong>計畫主持人：</strong> 登入「計畫預算管理」→「每月薪資確認」→ 選擇{{ $json.roc_month }}份 → 點選「送彙整」</li>\n      <li style=\"margin-bottom: 10px;\"><strong>研發處：</strong> 統一造冊，約7–11個工作天內入帳</li>\n    </ol>\n      \n    <hr style=\"border: 0; border-top: 1px solid #ccc; margin: 20px 0;\">\n    \n    <p style=\"font-weight: bold;\">Dear {{ $json.name }} Assistant,</p>\n    <p>This is a reminder to assist your students in completing the {{ $json.ad_date }} salary processing for part-time research assistants.</p>\n    \n    <p style=\"background-color: #eee; padding: 10px; border-radius: 5px;\">\n      Project number：{{ $json.project_code }}<br>\n      Project name： {{ $json.project_name }}\n    </p>\n\n    <p>Please follow the steps below in the <a href=\"https://lms.ntpu.edu.tw/site/assistant\" style=\"color: #007bff; text-decoration: underline;\">Part-Time Personnel Insurance Management System</a>.</p>\n    <p>Thank you for your cooperation!</p>\n\n    <p style=\"font-weight: bold; margin-top: 20px; color: #0056b3;\">Procedure:</p>\n    <ol style=\"padding-left: 20px; margin: 0 0 20px 0;\">\n      <li style=\"margin-bottom: 10px;\"><strong>Assistant:</strong> log in → Employment Document Submission → Fill in {{ $json.ad_month }} Work Hours or Progress Report</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Assistant:</strong> click Submit for Review to send to the project PI</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Professor:</strong> log in to Employment Document Management → Reviews and approves {{ $json.ad_month }} records</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Professor:</strong> log in to Project Budget Management → Monthly Salary Confirmation → Select {{ $json.ad_month }} → Click Submit for Consolidation</li>\n      <li style=\"margin-bottom: 10px;\"><strong>The R&D Office:</strong> will finalize the salary sheets. Payments are expected within 7–11 working days.</li>\n    </ol>\n    \n    <hr style=\"border: 0; border-top: 1px solid #ccc; margin: 20px 0;\">\n    \n    <p>如有相關須協助事項，可來電研發處洽詢，聯繫分機：66162胡小姐</p>\n    <p style=\"text-align: right; margin-top: 30px;\">君華 敬上</p>\n    \n    <div style=\"margin-top: 30px; border: 1px dashed #aaa; padding: 15px; text-align: center; background-color: #fff;\">\n      <p style=\"font-weight: bold; color: #c00;\">[薪資造冊流程圖]</p>\n      <p><strong>五項流程，缺一不可，速速完成，薪水入手！敬請大家多多配合，謝謝！</strong></p>\n      <p style=\"font-size: 12px; color: #888;\">{{ $json.imageHtml }}</p>\n    </div>\n    \n  </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        528
+      ],
+      "id": "91d13bed-833e-41e8-af9d-21270822e854",
+      "name": "寄給助理",
+      "webhookId": "7dcf397c-999f-4866-aecc-375c5368afa7",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "a8ZQ4G6TBKtquxDu",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.host_email }}",
+        "subject": "=【溫馨提醒】敬請您完成{{ $json.roc_date }}份研究計畫薪資流程，感謝您的協助。 [Gentle Reminder] Kindly complete the salary process for the {{ $json.ad_date }} research project. Thank you for your cooperation",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<title>研究計畫薪資流程溫馨提醒</title>\n</head>\n<body style=\"font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;\">\n  <div style=\"max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; background-color: #f9f9f9;\">\n    \n    <p>親愛的{{ $json.project_host }}教授，您好：</p>\n    <p>提醒您完成{{ $json.roc_date }}兼任助理薪資造冊作業。</p>\n    \n    <p style=\"background-color: #eee; padding: 10px; border-radius: 5px;\">\n      計畫編號： (EXCEL-R欄[本校計畫代碼])<br>\n      計畫名稱： (EXCEL-S欄[計畫名稱])\n    </p>\n\n    <p>請依照以下流程至 <a href=\"https://lms.ntpu.edu.tw/site/assistant\" style=\"color: #007bff; text-decoration: underline;\">「兼職人員保險管理系統」1.5兼職助理勞健保整合系統_登入網址</a> 操作， <strong>請勿自行造冊</strong>，謝謝您！</p>\n\n    <p style=\"font-weight: bold; margin-top: 20px; color: #0056b3;\">作業流程：</p>\n    <ol style=\"padding-left: 20px; margin: 0 0 20px 0;\">\n      <li style=\"margin-bottom: 10px;\"><strong>受聘助理：</strong> 登入系統 →「聘僱文件填報」→ 填寫{{ $json.roc_month }}份工時表／進度報告</li>\n      <li style=\"margin-bottom: 10px;\"><strong>受聘助理：</strong> 點選「送審」送交計畫主持人</li>\n      <li style=\"margin-bottom: 10px;\"><strong>計畫主持人：</strong> 登入「聘僱文件填報管理」→ 審核{{ $json.roc_month }}份資料</li>\n      <li style=\"margin-bottom: 10px;\"><strong>計畫主持人：</strong> 登入「計畫預算管理」→「每月薪資確認」→ 選擇{{ $json.roc_month }}份 → 點選「送彙整」</li>\n      <li style=\"margin-bottom: 10px;\"><strong>研發處：</strong> 統一造冊，約7–11個工作天內入帳</li>\n    </ol>\n      \n    <hr style=\"border: 0; border-top: 1px solid #ccc; margin: 20px 0;\">\n    \n    <p style=\"font-weight: bold;\">Dear Professor {{ $json.project_host }},</p>\n    <p>This is a reminder to assist your students in completing the {{ $json.ad_date }} salary processing for part-time research assistants.</p>\n    \n    <p style=\"background-color: #eee; padding: 10px; border-radius: 5px;\">\n      Project number：(EXCEL-R欄[本校計畫代碼])<br>\n      Project name： (EXCEL-S欄[計畫名稱])\n    </p>\n\n    <p>Please follow the steps below in the <a href=\"https://lms.ntpu.edu.tw/site/assistant\" style=\"color: #007bff; text-decoration: underline;\">Part-Time Personnel Insurance Management System</a>.</p>\n    <p>Thank you for your cooperation!</p>\n\n    <p style=\"font-weight: bold; margin-top: 20px; color: #0056b3;\">Procedure:</p>\n    <ol style=\"padding-left: 20px; margin: 0 0 20px 0;\">\n      <li style=\"margin-bottom: 10px;\"><strong>Assistant:</strong> log in → Employment Document Submission → Fill in {{ $json.ad_month }} Work Hours or Progress Report</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Assistant:</strong> click Submit for Review to send to the project PI</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Professor:</strong> log in to Employment Document Management → Reviews and approves {{ $json.ad_month }} records</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Professor:</strong> log in to Project Budget Management → Monthly Salary Confirmation → Select {{ $json.ad_month }} → Click Submit for Consolidation</li>\n      <li style=\"margin-bottom: 10px;\"><strong>The R&D Office:</strong> will finalize the salary sheets. Payments are expected within 7–11 working days.</li>\n    </ol>\n    \n    <hr style=\"border: 0; border-top: 1px solid #ccc; margin: 20px 0;\">\n    \n    <p>如有相關須協助事項，可來電研發處洽詢，聯繫分機：66162胡小姐</p>\n    <p style=\"text-align: right; margin-top: 30px;\">君華 敬上</p>\n    \n    <div style=\"margin-top: 30px; border: 1px dashed #aaa; padding: 15px; text-align: center; background-color: #fff;\">\n      <p style=\"font-weight: bold; color: #c00;\">[薪資造冊流程圖]</p>\n      <p><strong>五項流程，缺一不可，速速完成，薪水入手！敬請大家多多配合，謝謝！</strong></p>\n      <p style=\"font-size: 12px; color: #888;\">{{ $json.imageHtml }}</p>\n    </div>\n    \n  </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        848
+      ],
+      "id": "6fa3d86f-8e8b-4e59-a16f-89010b0b5515",
+      "name": "寄給教授",
+      "webhookId": "7dcf397c-999f-4866-aecc-375c5368afa7",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "a8ZQ4G6TBKtquxDu",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 假設圖片資料儲存在二進位欄位 'data'\nconst binaryData = $input.item.binary.data;\n\n// 取得圖片的 MIME 類型 (Content-Type)。您可能需要根據實際情況修改。\nconst mimeType = binaryData.mimeType || 'image/png'; // 假設是 PNG\n\n// 將 Base64 數據轉換成 Data URI 格式\nconst base64String = binaryData.data;\n\n// 完整的 HTML Image Tag\nconst htmlImgTag = `<img src=\"data:${mimeType};base64,${base64String}\" alt=\"Embedded Image\">`;\n\n// 輸出到下一個節點\nreturn [\n  {\n    json: {\n      imageHtml: htmlImgTag, // 這是您需要的內嵌 HTML 標籤\n      mimeType: mimeType\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        -160
+      ],
+      "id": "336288eb-220c-4a9b-8bb5-785deb768849",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1vAku9ZEdfjdnbL_pd6o8IObETVZIeNGm",
+          "mode": "list",
+          "cachedResultName": "image001.jpg",
+          "cachedResultUrl": "https://drive.google.com/file/d/1vAku9ZEdfjdnbL_pd6o8IObETVZIeNGm/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        32,
+        -160
+      ],
+      "id": "ae8df7e1-0c85-4fe4-8cbe-f4391252512f",
+      "name": "Download file",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "klYjW3Y2DFWUBGl0",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        528,
+        400
+      ],
+      "id": "199e333b-78f3-48cd-8636-0502f120bf61",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        464
+      ],
+      "id": "14b55131-e971-4f2d-8eea-46115a5a3804",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "pinData": {
+    "Code in JavaScript": [
+      {
+        "json": {
+          "imageHtml": "<img src=\"data:image/jpeg;base64,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\" alt=\"Embedded Image\">",
+          "mimeType": "image/jpeg"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "ROC Date": {
+      "main": [
+        [
+          {
+            "node": "AD to ROC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ROC Month": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AD to ROC": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AD Date": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AD Month": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items 1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "寄給助理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items 2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "寄給教授",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "取得合法助理資訊": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "取得不重複之合法教授資訊": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "寄給助理": {
+      "main": [
+        [
+          {
+            "node": "Wait 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "寄給教授": {
+      "main": [
+        [
+          {
+            "node": "Wait 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ROC Date",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AD Date",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ROC Month",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AD Month",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "取得合法助理資訊",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "取得不重複之合法教授資訊",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d07cf780-d847-49c7-8a8e-9c3e68b9fadc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f706121e9e9edcf7930af4951778f2b988de3d1f94bb49dd7d9470ac5e8f318b"
+  },
+  "id": "cfmd8QBKvlbQZwHs",
+  "tags": []
+}
