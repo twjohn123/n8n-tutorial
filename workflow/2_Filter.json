@@ -1,0 +1,281 @@
+{
+  "name": "2_Filter",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "(\n    SELECT\n        'PERSONNEL' AS data_type,  -- 標記數據來源為人員資訊\n        id,\n        project_code,\n        NULL AS corresponding_project,\n        NULL AS code_filter_condition\n    FROM\n        part_time_main_info\n)\n\nUNION ALL\n\n(\n    SELECT\n        'PROJECT' AS data_type,    -- 標記數據來源為專案資訊\n        NULL AS id,\n        NULL AS project_code,\n        corresponding_project,\n        code_filter_condition\n    FROM\n        project_code_info\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        224,
+        0
+      ],
+      "id": "c45963e6-d2dd-4068-93ff-50b0b5fc0d0d",
+      "name": "提取part_time_main_info和project_code_info資料",
+      "credentials": {
+        "postgres": {
+          "id": "tsfz6Zcekq5PV3Z6",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.all();\nlet promptText = \"## 專案代碼語義比對任務\\n\\n\";\n\n// 格式化人員數據 (ptmi)\npromptText += \"### 1. 計畫代碼列表 (待檢查):\\n\";\nconst personnelData = input.filter(item => item.json.id !== undefined); // 假設 id 來自 A\npersonnelData.forEach(item => {\n    promptText += `- ID: ${item.json.id}, Code: ${item.json.project_code}\\n`;\n});\npromptText += \"\\n\";\n\n// 格式化條件數據 (pci)\npromptText += \"### 2. 篩選條件和對應計畫列表 (自然語言或純代碼):\\n\";\nconst filterData = input.filter(item => item.json.code_filter_condition !== undefined); // 假設 code_filter_condition 來自 B\nfilterData.forEach(item => {\n    promptText += `- 條件: \"${item.json.code_filter_condition}\", 對應計畫: ${item.json.corresponding_project}\\n`;\n});\npromptText += \"\\n\\n\";\n\n// 輸出指令\npromptText += \"--- 指令 ---\\n\";\npromptText += \"請根據『篩選條件列表』的語義，交叉檢查『計畫代碼列表』中的每個專案代碼。\\n\";\npromptText += \"請只回傳一個json陣列，其中只包含所有符合任何一項條件的『ID』和『對應計畫』，並且不要添加任何其他符號(包括換行和空格))。\\n\";\n\nreturn [{ json: { analysis_prompt: promptText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "cd2e2192-616e-4ff0-9912-05b865fd3cd1",
+      "name": "將所有資料整合並建立prompt"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 獲取 Gemini 節點的原始 JSON 輸出\nconst rawResponse = $input.item.json;\n\n// 原始文本位於 content.parts[0].text\nlet rawText = rawResponse.content.parts[0].text;\n\n// 1. 移除 Markdown 程式碼區塊的開頭標記 (```json) 和結尾標記 (```)\n// 並且移除可能有的換行符號\nlet cleanedJsonText = rawText\n    .replace(/^```json\\s*/, '') // 移除開頭的 ```json 和任何空格/換行\n    .replace(/\\s*```$/, '')      // 移除結尾的 ``` 和任何空格/換行\n    .trim();                     // 移除字串頭尾所有空白\n\n// 2. 移除 Gemeni 有時會產生的換行符號 (\\n)\n// 確保它是一個乾淨的 JSON 字串\ncleanedJsonText = cleanedJsonText.replace(/\\\\n/g, ''); \n\n\n// 輸出乾淨的 JSON 字串\nreturn [{ json: { cleaned_ids_string: cleanedJsonText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        -224
+      ],
+      "id": "8ec6bbfd-35b8-46fa-bef1-de271647918d",
+      "name": "提取Gemini回應"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.analysis_prompt }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        672,
+        0
+      ],
+      "id": "45ef87e5-727b-443b-ae34-9aee77b060ef",
+      "name": "AI篩選計畫代碼",
+      "retryOnFail": true,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "L7CtfG8S1kfCBhHz",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- 1. [清理] 將所有記錄的 send_email_flag 重設為 FALSE\nUPDATE part_time_main_info\nSET send_email_flag = FALSE;\n\n\n-- 2. [設定] 重新定義 CTE，並設定符合 BOTH 條件的記錄的 send_email_flag 為 TRUE\nWITH month_boundaries AS (\n    SELECT\n        date_trunc('month', CURRENT_DATE)::date AS month_start,\n        (date_trunc('month', CURRENT_DATE) + interval '1 month - 1 day')::date AS month_end\n)\n  \nUPDATE part_time_main_info ptmi\nSET send_email_flag = TRUE\nWHERE \n    ptmi.id IN ({{ $json.idsForSql }})\n    AND ptmi.start_date <= (SELECT month_end FROM month_boundaries)\n    AND ptmi.end_date >= (SELECT month_start FROM month_boundaries);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1280,
+        -224
+      ],
+      "id": "a1a9c267-b030-459d-9040-9641b7356768",
+      "name": "篩選日期&計畫代碼",
+      "credentials": {
+        "postgres": {
+          "id": "tsfz6Zcekq5PV3Z6",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 獲取包含 ID 字串的屬性值\nconst idsString = $input.item.json.cleaned_ids_string; \n\n// 1. 使用 JSON.parse() 將字串解析成真正的陣列\n// 這一步會將 \"[2, 4, 8, ...]\" 轉換成 [2, 4, 8, ...]\nconst idsArray = JSON.parse(idsString); \n\n// 2. 將 ID 陣列轉換成 SQL 語句所需的逗號分隔字串\n// 這裡的 join() 現在是可用的\nconst idsForSql = idsArray.join(', ');\n\n// 輸出 SQL 查詢字串\nreturn [{ json: { idsForSql: idsForSql } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        -224
+      ],
+      "id": "9157c107-f440-424d-9338-238f7ae8032c",
+      "name": "拆解id陣列"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f77034b7-7615-4620-82e7-ec619f440705",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. 精確提取包含 JSON 陣列的字串\n// 根據您的第一個截圖，資料路徑是 content.parts[0].text\nconst rawJsonString = $input.item.json.content.parts[0].text; \n\n// 2. 解析 JSON 字串\n// 由於內容是合法的 JSON 陣列，直接解析即可\nconst parsedArray = JSON.parse(rawJsonString);\n\n// 3. 準備 n8n 輸出\n// 我們需要將解析後的陣列中的每個物件，轉換成 n8n 的 Item 格式\nconst outputItems = [];\n\n// 遍歷解析後的陣列\nfor (const item of parsedArray) {\n    // 每個物件 {} 變成一個獨立的 n8n Item\n    outputItems.push({\n        json: item \n    });\n}\n\n// 回傳結果\n// 這會輸出 6 個 Item\nreturn outputItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "fd49bebf-92f8-4135-93ca-2b7bf51379cd",
+      "name": "提取AI回應並分割物件"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst projectMapArray = [];\n\nfor (const item of items) {\n    const id = item.json.ID;\n    // 取得計畫名稱並確保將單引號 ' 進行跳脫處理，以防止 SQL 語法錯誤\n    const name = item.json['對應計畫'].replace(/'/g, \"''\"); \n    \n    // 格式化成 SQL VALUES 語法：(ID, 'Project Name')\n    projectMapArray.push(`(${id}, '${name}')`);\n}\n\n// 將陣列連接成逗號分隔的字串\nconst projectMapString = projectMapArray.join(', ');\n\n// 將結果作為一個新的 Item 輸出，供 SQL 節點使用\nreturn [\n  {\n    json: {\n      projectMap: projectMapString,\n      // 如果您需要舊的 IDs 列表給其他地方用，也可以一併輸出\n      idsForSql: items.map(i => i.json.ID).join(',')\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        0
+      ],
+      "id": "1a816f9e-c997-471a-bbf5-2febfa5576cb",
+      "name": "轉為SQL物件"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- 1. [清理] 將所有記錄的 send_email_flag 重設為 FALSE\nUPDATE part_time_main_info\nSET send_email_flag = FALSE;\n\n\n-- 2. [設定] 重新定義 CTE，並設定符合 BOTH 條件的記錄的 send_email_flag 為 TRUE，同時更新 project_name\n\nWITH month_boundaries AS (\n    SELECT\n        date_trunc('month', CURRENT_DATE)::date AS month_start,\n        (date_trunc('month', CURRENT_DATE) + interval '1 month - 1 day')::date AS month_end\n),\n-- 新增 CTE: project_updates，用於將 n8n 的資料轉為 SQL 表格\nproject_updates AS (\n    SELECT id, project_name\n    FROM (\n        VALUES \n            /* ！！！請確保這個 n8n 變數替換成以下格式的字串！！！ */\n            {{ $json.projectMap }} \n            /* 範例: (2, '企業產學計畫'), (4, '國科會計畫'), (8, '企業產學計畫'), ... */\n    ) AS mapping_data (id, project_name)\n)\n\nUPDATE part_time_main_info ptmi\nSET \n    send_email_flag = TRUE,\n    project_name = pu.project_name  -- 新增：將對應的計畫名稱寫入欄位\nFROM project_updates pu\nWHERE \n    ptmi.id = pu.id  -- 關鍵：使用 ID 進行 JOIN，確保每個 ID 拿到對應的 project_name\n    -- 條件 1: start_date 在現在日期之前 (使用 TODAY() 或 CURRENT_DATE)\n    AND ptmi.start_date <= CURRENT_DATE\n    -- 條件 2: end_date 在 month_start 和 month_end 之間\n    AND ptmi.end_date BETWEEN (SELECT month_start FROM month_boundaries) AND (SELECT month_end FROM month_boundaries);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1408,
+        0
+      ],
+      "id": "29b92083-9935-4b1f-aa79-590e8087c3ab",
+      "name": "篩選計畫代碼和日期 & 輸入計畫名稱",
+      "credentials": {
+        "postgres": {
+          "id": "tsfz6Zcekq5PV3Z6",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "提取part_time_main_info和project_code_info資料": {
+      "main": [
+        [
+          {
+            "node": "將所有資料整合並建立prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "將所有資料整合並建立prompt": {
+      "main": [
+        [
+          {
+            "node": "AI篩選計畫代碼",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "提取Gemini回應": {
+      "main": [
+        [
+          {
+            "node": "拆解id陣列",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI篩選計畫代碼": {
+      "main": [
+        [
+          {
+            "node": "提取AI回應並分割物件",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "拆解id陣列": {
+      "main": [
+        [
+          {
+            "node": "篩選日期&計畫代碼",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "提取part_time_main_info和project_code_info資料",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "提取AI回應並分割物件": {
+      "main": [
+        [
+          {
+            "node": "轉為SQL物件",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "轉為SQL物件": {
+      "main": [
+        [
+          {
+            "node": "篩選計畫代碼和日期 & 輸入計畫名稱",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7126965e-7f88-4e75-8a59-b68ec3c8bedc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f706121e9e9edcf7930af4951778f2b988de3d1f94bb49dd7d9470ac5e8f318b"
+  },
+  "id": "foQfHQGCkByV5ANL",
+  "tags": []
+}

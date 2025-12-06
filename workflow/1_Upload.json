@@ -1,0 +1,1426 @@
+{
+  "name": "1_Upload",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "15wQZRM2tyuu7C-THxV1sKlPZyMykItPO",
+          "mode": "list",
+          "cachedResultName": "114年11月兼任助理清單-測試檔1.xlsx",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15wQZRM2tyuu7C-THxV1sKlPZyMykItPO/edit?usp=drivesdk&ouid=114004311575056143954&rtpof=true&sd=true"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -224,
+        176
+      ],
+      "id": "886576fd-b9ba-4dd8-a970-1d0aec515b1d",
+      "name": "Download file",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "klYjW3Y2DFWUBGl0",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        176
+      ],
+      "id": "421459fa-2201-4367-834d-01efa6cf65c4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "sheetName": "ProjectCodeInfo"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        0,
+        176
+      ],
+      "id": "eeea051b-91ed-45b2-b81d-c2ac81c6cee9",
+      "name": "Get ProjectCodeInfo"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "sheetName": "ProjectHostInfo"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        0,
+        352
+      ],
+      "id": "fb866822-052b-48d0-a5c1-a05b4b703b84",
+      "name": "Get ProjectHostInfo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c8950994-1618-47cb-8490-b8a9e75559f2",
+              "name": "name",
+              "value": "={{ $json['姓名'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6de017a2-75c0-4193-ab1b-b607b9de0b92",
+              "name": "email",
+              "value": "={{ $json.EMail }}",
+              "type": "string"
+            },
+            {
+              "id": "0262d1e9-bae2-4101-9bb6-7a8c456b81b7",
+              "name": "grade",
+              "value": "={{ $json['級別'] }}",
+              "type": "string"
+            },
+            {
+              "id": "7fbd1ab2-308a-41ad-b156-d384713e7e9a",
+              "name": "work_type",
+              "value": "={{ $json['類別職稱'] }}",
+              "type": "string"
+            },
+            {
+              "id": "de175297-106d-47d5-9578-e7c7725fdcce",
+              "name": "pay_type",
+              "value": "={{ $json['型態'] }}",
+              "type": "string"
+            },
+            {
+              "id": "f1b760dc-56b1-41cc-9670-a5db03009298",
+              "name": "start_date",
+              "value": "={{ $json['聘期起始日'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a4a487bd-43f1-448e-aa1f-81edd2547fe5",
+              "name": "end_date",
+              "value": "={{ $json['聘期結束日'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3c080bc7-750a-46dd-b009-a280955a66b0",
+              "name": "project_code",
+              "value": "={{ $json['本校計畫代碼'] }}",
+              "type": "string"
+            },
+            {
+              "id": "7695aa8d-eee2-4717-8faf-91b2fb13666d",
+              "name": "project_host",
+              "value": "={{ $json['計畫主持人'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        0
+      ],
+      "id": "3386aa32-766a-4702-acc2-b1287116f22a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "77545265-4398-4f5f-b3ec-73ec441d42e1",
+              "name": "host_name",
+              "value": "={{ $json['計畫主持人'] }}",
+              "type": "string"
+            },
+            {
+              "id": "af00fad6-98cc-4638-8f83-efce870379d9",
+              "name": "host_email",
+              "value": "={{ $json['計畫主持人EMail'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        352
+      ],
+      "id": "f3500d6e-20c3-4859-96a9-2d2e02d4b4aa",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "sheetName": "PartTimeMainInfo"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "21d0f8f1-a3fa-48a1-a7c6-c14302c28783",
+      "name": "Get PartTimeMainInfo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "105f63e4-0768-435b-a0c4-cea34d0b0ce5",
+              "name": "corresponding_project",
+              "value": "={{ $json['對應計畫'] }}",
+              "type": "string"
+            },
+            {
+              "id": "5b2bac4c-f684-4f78-9fd8-c06d1b7aff89",
+              "name": "code_filter_condition",
+              "value": "={{ $json['本校計畫代碼 篩選條件'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        176
+      ],
+      "id": "0de2370f-3a7e-46bf-8f7f-47725e7e887a",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "part_time_main_info",
+          "mode": "list",
+          "cachedResultName": "part_time_main_info"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "name",
+            "project_code"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "grade",
+              "displayName": "grade",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "work_type",
+              "displayName": "work_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "pay_type",
+              "displayName": "pay_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "start_date",
+              "displayName": "start_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "end_date",
+              "displayName": "end_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "project_code",
+              "displayName": "project_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "project_host",
+              "displayName": "project_host",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "send_email_flag",
+              "displayName": "send_email_flag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        560,
+        0
+      ],
+      "id": "1f0f0e53-1ca7-4cb6-b2fd-398cdbaef130",
+      "name": "Upsert part_time_main_info",
+      "credentials": {
+        "postgres": {
+          "id": "tsfz6Zcekq5PV3Z6",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "project_code_info",
+          "mode": "list",
+          "cachedResultName": "project_code_info"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "code_filter_condition"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "corresponding_project",
+              "displayName": "corresponding_project",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "code_filter_condition",
+              "displayName": "code_filter_condition",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        560,
+        176
+      ],
+      "id": "d5eae373-9848-4ef7-aba7-dfbc1e36f80f",
+      "name": "Upsert project_code_info",
+      "credentials": {
+        "postgres": {
+          "id": "tsfz6Zcekq5PV3Z6",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "project_host_info",
+          "mode": "list",
+          "cachedResultName": "project_host_info"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "host_name"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "host_name",
+              "displayName": "host_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "host_email",
+              "displayName": "host_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        560,
+        352
+      ],
+      "id": "4c64b1fb-bf6c-4211-a7aa-85f26bb05e0f",
+      "name": "Upsert project_host_info",
+      "credentials": {
+        "postgres": {
+          "id": "tsfz6Zcekq5PV3Z6",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * 輔助函式：將民國日期字串（例如 113/07/01）轉換為標準西元日期字串（YYYY-MM-DD）\n * @param {string} rocDateString - 待轉換的民國日期字串\n * @returns {string|null} - 轉換後的標準日期字串，或 null (如果輸入無效)\n */\nfunction convertRocToWesternDate(rocDateString) {\n  if (!rocDateString || typeof rocDateString !== 'string') {\n    return null;\n  }\n  \n  // 處理 '/' 或 '.' 作為分隔符\n  const parts = rocDateString.split(/[./]/); \n  \n  if (parts.length === 3) {\n    const rocYear = parseInt(parts[0], 10);\n    \n    // 檢查年是否為數字\n    if (isNaN(rocYear)) {\n      return null;\n    }\n    \n    const month = parts[1].padStart(2, '0');\n    const day = parts[2].padStart(2, '0');\n\n    // 將民國年轉為西元年\n    const westernYear = 1911 + rocYear;\n    \n    // 組合為標準 YYYY-MM-DD 格式\n    return `${westernYear}-${month}-${day}`;\n  }\n  \n  return null;\n}\n\n\n// 主程式邏輯：遍歷所有項目並直接覆蓋原始日期欄位\nfor (const item of $input.all()) {\n  const json = item.json;\n\n  // 1. 處理 '聘期起始日'\n  const rocStartDate = json[\"聘期起始日\"]; \n  // 直接將轉換結果賦值回原欄位\n  json[\"聘期起始日\"] = convertRocToWesternDate(rocStartDate);\n  \n  // 2. 處理 '聘期結束日'\n  const rocEndDate = json[\"聘期結束日\"]; \n  // 直接將轉換結果賦值回原欄位\n  json[\"聘期結束日\"] = convertRocToWesternDate(rocEndDate);\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        0
+      ],
+      "id": "c6fcd428-53cc-4a13-b228-2a573ef46e46",
+      "name": "Date Format Converter"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        784,
+        160
+      ],
+      "id": "6c034e00-fba1-4d88-b11d-c6417efebd6b",
+      "name": "Wait for branches"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "foQfHQGCkByV5ANL",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/foQfHQGCkByV5ANL",
+          "cachedResultName": "2_Filter"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Executed",
+              "displayName": "Executed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "boolean",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        976,
+        176
+      ],
+      "id": "0ae8b4c0-1739-469b-9dbc-85792692f806",
+      "name": "Call '2_Filter'"
+    }
+  ],
+  "pinData": {
+    "Get PartTimeMainInfo": [
+      {
+        "json": {
+          "姓名": "胡君華1",
+          "身分證字號": "F800211119",
+          "性別": "男",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "chunhaw@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "永續創新國際學院,智慧醫療管理英語碩士學位學程,2,碩博士班",
+          "學號": "711391101",
+          "類別職稱": "研究獎助生",
+          "型態": "獎助型",
+          "聘期起始日": "108/08/01",
+          "聘期結束日": "108/08/30",
+          "給薪方式": "月薪",
+          "採計單位": "5,600",
+          "預估薪資金額": "5,600",
+          "本校計畫代碼": "105PUB120-PUB",
+          "計畫主持人": "陳裕賢9",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "姓名": "羅文菁1",
+          "身分證字號": "F800211119",
+          "性別": "女",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "bearby@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "永續創新國際學院,智慧醫療管理英語碩士學位學程,2,碩博士班",
+          "學號": "711391101",
+          "類別職稱": "研究獎助生",
+          "型態": "獎助型",
+          "聘期起始日": "114/08/01",
+          "聘期結束日": "114/12/31",
+          "給薪方式": "月薪",
+          "採計單位": "11,200",
+          "預估薪資金額": "11,200",
+          "本校計畫代碼": "113A215201",
+          "計畫主持人": "董柏伶6",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "姓名": "羅文菁2",
+          "身分證字號": "F800211119",
+          "性別": "女",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "bearby@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "商學院,休閒運動管理學系,4,學士班",
+          "學號": "411184053",
+          "類別職稱": "研究獎助生",
+          "型態": "獎助型",
+          "聘期起始日": "107/09/28",
+          "聘期結束日": "107/09/28",
+          "給薪方式": "月薪",
+          "採計單位": "15,000",
+          "預估薪資金額": "15,000",
+          "本校計畫代碼": "107S112003-S3200",
+          "計畫主持人": "董柏伶7",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "姓名": "曾敏玲2",
+          "身分證字號": "F800211119",
+          "性別": "女",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "minitseng@gm.ntpu.edu.tw ",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "永續創新國際學院,城市治理英語碩士學位學程,2,碩博士班",
+          "學號": "711276717",
+          "類別職稱": "研究獎助生",
+          "型態": "獎助型",
+          "聘期起始日": "113/08/01",
+          "聘期結束日": "114/07/31",
+          "給薪方式": "月薪",
+          "採計單位": "20,000",
+          "預估薪資金額": "20,000",
+          "本校計畫代碼": "113B121131-200300",
+          "計畫主持人": "董柏伶5",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "姓名": "胡君華6",
+          "身分證字號": "F800211119",
+          "性別": "男",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "bearby@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "人文學院,歷史學系,4,學士班",
+          "學號": "411183019",
+          "類別職稱": "工讀生",
+          "型態": "勞僱型",
+          "聘期起始日": "113/09/01",
+          "聘期結束日": "113/12/31",
+          "給薪方式": "時薪",
+          "採計單位": "190",
+          "預估薪資金額": "4,750",
+          "本校計畫代碼": "113E19105-200300",
+          "計畫主持人": "陳裕賢6",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "姓名": "胡君華5",
+          "身分證字號": "F800211119",
+          "性別": "女",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "bearby@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "法律學院,法律學系碩士班一般生組,3,碩博士班",
+          "學號": "711251405",
+          "類別職稱": "研究獎助生",
+          "型態": "獎助型",
+          "聘期起始日": "113/02/18",
+          "聘期結束日": "113/12/03",
+          "給薪方式": "月薪",
+          "採計單位": "8,000",
+          "預估薪資金額": "8,000",
+          "本校計畫代碼": "113I20131-200300",
+          "計畫主持人": "陳裕賢5",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "姓名": "羅文菁3",
+          "身分證字號": "F800211119",
+          "性別": "男",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "bearby@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "海山學研究中心,540,研究助理",
+          "學號": "000000000",
+          "類別職稱": "臨時工",
+          "型態": "勞僱型",
+          "聘期起始日": "113/01/10",
+          "聘期結束日": "113/01/11",
+          "給薪方式": "時薪",
+          "採計單位": 200,
+          "預估薪資金額": 8000,
+          "本校計畫代碼": "113T21G3-120",
+          "計畫主持人": "陳裕賢4",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "姓名": "羅文菁4",
+          "身分證字號": "F800211119",
+          "性別": "女",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "bearby@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "校外人士,",
+          "學號": "000000000",
+          "類別職稱": "臨時工",
+          "型態": "勞僱型",
+          "聘期起始日": "114/09/01",
+          "聘期結束日": "114/12/31",
+          "給薪方式": "時薪",
+          "採計單位": 200,
+          "預估薪資金額": 2000,
+          "本校計畫代碼": "114A316503-200100",
+          "計畫主持人": "陳裕賢7",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "姓名": "曾敏玲3",
+          "身分證字號": "F800211119",
+          "性別": "女",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "minitseng@gm.ntpu.edu.tw ",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "校外人士,",
+          "學號": "000000000",
+          "類別職稱": "臨時工",
+          "型態": "勞僱型",
+          "聘期起始日": "114/09/01",
+          "聘期結束日": "114/11/30",
+          "給薪方式": "時薪",
+          "採計單位": 200,
+          "預估薪資金額": 5000,
+          "本校計畫代碼": "114B121013-200300",
+          "計畫主持人": "陳裕賢1",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "姓名": "胡君華2",
+          "身分證字號": "F800211119",
+          "性別": "男",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "chunhaw@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "電機資訊學院,通訊工程學系碩士班,2,碩博士班",
+          "學號": "711381103",
+          "類別職稱": "高教深耕研究助理",
+          "型態": "獎助型",
+          "聘期起始日": "114/08/01",
+          "聘期結束日": "114/12/31",
+          "給薪方式": "月薪",
+          "採計單位": 6000,
+          "預估薪資金額": 6000,
+          "本校計畫代碼": "114B16501-200300",
+          "計畫主持人": "董柏伶1",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "姓名": "羅文菁6",
+          "身分證字號": "F800211119",
+          "性別": "男",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "bearby@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "人文學院,中國文學系碩士班,4,碩博士班",
+          "學號": "711143109",
+          "類別職稱": "研究獎助生",
+          "型態": "獎助型",
+          "聘期起始日": "114/11/03",
+          "聘期結束日": "114/11/28",
+          "給薪方式": "月薪",
+          "採計單位": "15,000",
+          "預估薪資金額": "15,000",
+          "本校計畫代碼": "114E1903-S3200",
+          "計畫主持人": "陳裕賢8",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "姓名": "曾敏玲1",
+          "身分證字號": "F800211119",
+          "性別": "男",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "minitseng@gm.ntpu.edu.tw ",
+          "原住民": "是",
+          "身心障礙等級": 1,
+          "級別": "人文學院,中國文學系,4,學士班",
+          "學號": "411181026",
+          "類別職稱": "研究獎助生",
+          "型態": "獎助型",
+          "聘期起始日": "114/08/01",
+          "聘期結束日": "114/10/31",
+          "給薪方式": "月薪",
+          "採計單位": 6000,
+          "預估薪資金額": 6000,
+          "本校計畫代碼": "114E19103-200300",
+          "計畫主持人": "董柏伶4",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "姓名": "胡君華7",
+          "身分證字號": "F800211119",
+          "性別": "女",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "bearby@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "人文學院,中國文學系,4,學士班",
+          "學號": "411177128",
+          "類別職稱": "研究獎助生",
+          "型態": "獎助型",
+          "聘期起始日": "114/08/01",
+          "聘期結束日": "115/07/31",
+          "給薪方式": "月薪",
+          "採計單位": "15,000",
+          "預估薪資金額": "15,000",
+          "本校計畫代碼": "114HA1902-200300",
+          "計畫主持人": "董柏伶8",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "姓名": "胡君華3",
+          "身分證字號": "F800211119",
+          "性別": "男",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "chunhaw@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "人文學院,應用外語學系,3,學士班",
+          "學號": "411282022",
+          "類別職稱": "兼任助理",
+          "型態": "勞僱型",
+          "聘期起始日": "114/09/11",
+          "聘期結束日": "114/11/30",
+          "給薪方式": "月薪",
+          "採計單位": 10000,
+          "預估薪資金額": 10000,
+          "本校計畫代碼": "114HC003-200300",
+          "計畫主持人": "董柏伶2",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "姓名": "曾敏玲4",
+          "身分證字號": "F800211119",
+          "性別": "男",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "minitseng@gm.ntpu.edu.tw ",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "校外人士,",
+          "學號": "000000000",
+          "類別職稱": "臨時工",
+          "型態": "勞僱型",
+          "聘期起始日": "114/09/12",
+          "聘期結束日": "114/11/30",
+          "給薪方式": "時薪",
+          "採計單位": 200,
+          "預估薪資金額": 15000,
+          "本校計畫代碼": "114I20131-200300",
+          "計畫主持人": "陳裕賢2",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "姓名": "胡君華4",
+          "身分證字號": "F800211119",
+          "性別": "女",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "chunhaw@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "公共事務學院,都市計劃研究所博士班,1,碩博士班",
+          "學號": "811474101",
+          "類別職稱": "研究獎助生",
+          "型態": "獎助型",
+          "聘期起始日": "114/09/11",
+          "聘期結束日": "114/11/30",
+          "給薪方式": "月薪",
+          "採計單位": 10000,
+          "預估薪資金額": 10000,
+          "本校計畫代碼": "114I20132-200300",
+          "計畫主持人": "董柏伶3",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "姓名": "羅文菁5",
+          "身分證字號": "F800211119",
+          "性別": "男",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "bearby@gm.ntpu.edu.tw",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "校外人士,",
+          "學號": "000000000",
+          "類別職稱": "臨時工",
+          "型態": "勞僱型",
+          "聘期起始日": "114/09/01",
+          "聘期結束日": "115/07/31",
+          "給薪方式": "時薪",
+          "採計單位": 200,
+          "預估薪資金額": 2500,
+          "本校計畫代碼": "114S112003-S3200",
+          "計畫主持人": "董柏伶9",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "姓名": "曾敏玲5",
+          "身分證字號": "F800211119",
+          "性別": "男",
+          "出生年月日": "090/02/19",
+          "電話": 955666555,
+          "EMail": "minitseng@gm.ntpu.edu.tw ",
+          "原住民": "否",
+          "身心障礙等級": "0",
+          "級別": "商學院,企業管理學系碩士班,1,碩博士班",
+          "學號": "711431606",
+          "類別職稱": "高教深耕工讀生",
+          "型態": "勞僱型",
+          "聘期起始日": "114/10/09",
+          "聘期結束日": "114/12/31",
+          "給薪方式": "時薪",
+          "採計單位": "190",
+          "預估薪資金額": 5800,
+          "本校計畫代碼": "114T25A-B3200",
+          "計畫主持人": "陳裕賢3",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      }
+    ],
+    "Get ProjectCodeInfo": [
+      {
+        "json": {
+          "對應計畫": "企業產學計畫",
+          "本校計畫代碼 篩選條件": "109A開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "企業產學計畫",
+          "本校計畫代碼 篩選條件": "110A開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "企業產學計畫",
+          "本校計畫代碼 篩選條件": "111A開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "企業產學計畫",
+          "本校計畫代碼 篩選條件": "112A開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "企業產學計畫",
+          "本校計畫代碼 篩選條件": "113A開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "企業產學計畫",
+          "本校計畫代碼 篩選條件": "114A開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "企業產學計畫",
+          "本校計畫代碼 篩選條件": "115A開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "國科會計畫",
+          "本校計畫代碼 篩選條件": "109B開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "國科會計畫",
+          "本校計畫代碼 篩選條件": "110B開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "國科會計畫",
+          "本校計畫代碼 篩選條件": "111B開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "國科會計畫",
+          "本校計畫代碼 篩選條件": "112B開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "國科會計畫",
+          "本校計畫代碼 篩選條件": "113B開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "國科會計畫",
+          "本校計畫代碼 篩選條件": "114B開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "國科會計畫",
+          "本校計畫代碼 篩選條件": "115B開頭"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "北聯大計畫",
+          "本校計畫代碼 篩選條件": "114T25A-B3200"
+        }
+      },
+      {
+        "json": {
+          "對應計畫": "特色領域計畫",
+          "本校計畫代碼 篩選條件": "114E19101-200300"
+        }
+      }
+    ],
+    "Get ProjectHostInfo": [
+      {
+        "json": {
+          "計畫主持人": "陳裕賢9",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "董柏伶6",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "董柏伶7",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "董柏伶5",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "陳裕賢6",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "陳裕賢5",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "陳裕賢4",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "陳裕賢7",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "陳裕賢1",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "董柏伶1",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "陳裕賢8",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "董柏伶4",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "董柏伶8",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "董柏伶2",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "陳裕賢2",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "董柏伶3",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "董柏伶9",
+          "計畫主持人EMail": "poling@gm.ntpu.edu.tw"
+        }
+      },
+      {
+        "json": {
+          "計畫主持人": "陳裕賢3",
+          "計畫主持人EMail": "yschen.rd@gmail.com "
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Get PartTimeMainInfo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get ProjectCodeInfo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get ProjectHostInfo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Upsert part_time_main_info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get ProjectHostInfo": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Upsert project_host_info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get PartTimeMainInfo": {
+      "main": [
+        [
+          {
+            "node": "Date Format Converter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get ProjectCodeInfo": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Upsert project_code_info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date Format Converter": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert project_code_info": {
+      "main": [
+        [
+          {
+            "node": "Wait for branches",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Upsert part_time_main_info": {
+      "main": [
+        [
+          {
+            "node": "Wait for branches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert project_host_info": {
+      "main": [
+        [
+          {
+            "node": "Wait for branches",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Wait for branches": {
+      "main": [
+        [
+          {
+            "node": "Call '2_Filter'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "47786428-527d-411f-80f6-6af35bac5041",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f706121e9e9edcf7930af4951778f2b988de3d1f94bb49dd7d9470ac5e8f318b"
+  },
+  "id": "StiF2le3XeUqr8sI",
+  "tags": []
+}
