@@ -213,4 +213,11 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
 
 n8n 有許多不同種類和功能的節點，我將從其中挑選幾個重要或常用的來進行介紹。
 
+**1. Trigger Manually**
+
 <img width="306" height="223" alt="image" src="https://github.com/user-attachments/assets/d69efc4c-d30f-41dc-af9c-53318be56eef" />
+
+* 類型：觸發節點
+* 功能：點擊 **Execute workflow** 後，此節點便會輸出一個信號，用來觸發在此之後的下個節點。
+
+**2. **
