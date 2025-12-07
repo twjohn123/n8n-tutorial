@@ -43,7 +43,7 @@ n8n 技術文章
 * PostgreSQL 的資料導入和刪除
 * PostgreSQL 的資料查詢
 
-### 4. 系統的架構和設計
+### 4. [系統的架構和設計](#system)
 
 * 工作流1：資料傳進資料庫的具體架構
 * 工作流2：篩選條件和寄送信件的具體架構
@@ -375,7 +375,7 @@ Google sheet 和 Google drive 的 Credential 可直接使用**同一個**用戶�
 
 這裡我們創建一個簡單的工作流，用以示範各節點如何運行。
 
-
+# 待完成
 
 
 <h2 id="database">資料庫的基本節構和功能</h2>
@@ -389,4 +389,102 @@ PostgreSQL 可以算是所有資料庫中功能最齊全、且最具彈性的選
 首先為 PostgreSQL 的整體結構，因為我們暫時只會用到儲存、讀取資料的功能，這裡我們將聚焦於 **Schemas** 中 **Tables** 的部分。
 
 <img width="336" height="932" alt="image" src="https://github.com/user-attachments/assets/ae398c49-0a2f-4bf9-bfc1-55300ba7f070" />
+
+<img width="459" height="394" alt="image" src="https://github.com/user-attachments/assets/eb892be2-a6e7-49a8-8e01-d6a26b0e91ca" />
+
+在 Tables 中，這裡可以看到我們所創建的各個資料，你可以想像每個 table 皆對應著一個 Excel 表格 (在這裡為 project_code_info 和 project_host_info)。
+
+* **Columns**：table 的各個資料欄位，你可以想像成 Excel 表格中對應的每一**列**。
+
+* **Constraints**：table 的資料限制，會對輸入進的資料施加**規則**，當滿足或違反特定規則時對資料施加特定動作 (通常為拒絕該資料或覆蓋元資料)。
+
+* **Indexes**： table 的索引。PostgreSQL 可以對各個 Column 進行索引化，如此在讀取資料時，便可用更快的速度取得資料，只不過代價是要消耗更多記憶體空間。
+
+以上為我們「每月自動寄送信件」系統所會用到的功能，剩下的功能因為跟此系統無關，所以暫時不論。
+
+### PostgreSQL 的欄位和規則建立
+
+在 PostgreSQL 上建立 table 有很多種方法，這裡我們將直接使用 n8n 來建立。
+
+首先隨便開起一個工作流，在裡面添加一個 Postgres 的節點，並選擇 **Execute a SQL query**。
+
+所謂的 SQL query，可以當作是資料庫版本的程式碼，用於執行各種較複雜的指令。
+
+這裡我們將分別使用 SQL Script 資料夾中：
+* part_time_main_info_CREATE：建立 part_time_main_info 的 table
+* project_code_info_CREATE：建立 project_code_info 的 table
+* project_host_info_CREATE：建立 project_host_info 的 table
+
+每個 SQL query 皆包含對應 column, constraint 和 index 的建立，詳細的部分可參考 query 中的註解。
+
+將每個 SQL query 複製並添加到 **Execute a SQL query** 節點中，並按下右上角的 **Execute step** 即可執行 (只會執行該節點，不會執行整個工作流)。
+
+### PostgreSQL 的資料導入和刪除
+
+導入和刪除資料的部分，都可以透過 n8n 的 Postgres 節點完成。
+
+在輸入的部分，我們通常會使用 **Insert, Insert or Update, Update** 這三種模式來執行。
+* Insert：直接向該 table 添加資料
+* Insert or Update (Upsert)：檢查 constraints，若符合條件則**更新**特定已存在資料，否則**新增**該筆資料
+* Update：檢查 constraints，若符合條件則**更新**特定資料已存在資料，否則不做任何動作
+
+在刪除部分，通常使用 **Delete** 來執行，而這又分成三種模式。
+* Truncate：將整個 table 的資料清空，但保留 table 的整體架構 (column, constraint, index..)
+* Delete：藉由特定條件刪除 table 中的特定資料
+* Drop：直接將整個 table 刪除
+
+以上為簡要的資料導入和刪除方法，更多的部分將在介紹「每月自動寄送信件」系統的工作流時講解。
+
+### PostgreSQL 的資料查詢
+
+在查詢 (輸出) 的部分，通常使用 **Select, Execute Query** 兩種模式執行。
+* Select：直接搜索並輸出特定行的資料
+* Execute Query：透過 SQL query 使用特殊的方法篩選、組合並輸出資料
+
+這裡舉例一個用 SQL query 查詢資料的方法：
+
+```sql
+(
+    SELECT
+        'PERSONNEL' AS data_type,  -- 標記數據來源為人員資訊
+        id,
+        project_code,
+        NULL AS corresponding_project,
+        NULL AS code_filter_condition
+    FROM
+        part_time_main_info
+)
+
+UNION ALL
+
+(
+    SELECT
+        'PROJECT' AS data_type,    -- 標記數據來源為專案資訊
+        NULL AS id,
+        NULL AS project_code,
+        corresponding_project,
+        code_filter_condition
+    FROM
+        project_code_info
+);
+```
+
+執行該 query，將會輸出從 part_time_main_info 和 project_code_info 整合在一起的資料。
+* part_time_main_info 只輸出 id 和 project_code 的 column
+* project_code_info 輸出所有 column (corresponding_project, code_filter_condition)
+* 兩者合併，彼此所缺失的 column 皆輸出為 NULL
+
+以上為 PostgreSQL 資料查詢的簡易介紹和範例，更多的部分將在介紹「每月自動寄送信件」系統的工作流時講解。
+
+
+
+<h2 id="system">系統的架構和設計</h2>
+
+前面講了非常多，我們總算可以進入正題 - 介紹「每月自動寄送信件」系統的工作流了。
+
+這裡我將各個 n8n 工作流放入 Workflow 的資料夾中：
+* 1_Upload：此工作流負責將資料上傳到資料庫並交由 AI (Google Gemini) 進行對應處理
+* 2_Send：此工作流負責將比較和讀取資料庫中的資料，並將其透過 Gmail 發送給特定的人
+
+### 工作流1：資料傳進資料庫的具體架構
 
