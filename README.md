@@ -267,9 +267,9 @@ Credential 可以說是讓 n8n 節點得以和各種 AI 工具、 API 和資料�
 
 要新增 Credential，可以直接從該結點中新增，或者直接返回 n8n 主頁面 -> Credentials 來新增。
 
-**1. Google Gemini**
+#### 1. Google Gemini
 
-首先前往 [Google AI studio][google_ai_studio_url]網頁，點選 **Get started**，接著執行各個註冊程序。
+首先前往 [Google AI studio][google_ai_studio_url] 網頁，點選 **Get started**，接著執行各個註冊程序。
 
   [google_ai_studio_url]:https://aistudio.google.com/welcome?utm_source=PMAX&utm_medium=display&utm_campaign=FY25-global-DR-pmax-1710442&utm_content=pmax&gclsrc=aw.ds&gad_source=1&gad_campaignid=21772729580&gbraid=0AAAAACn9t66KgxFqg0b-uPDUBc_gGg3Qz&gclid=Cj0KCQiA6NTJBhDEARIsAB7QHD1s9RWtaHhnfuBdhsEx1-Iv3UkDVuMaX6tP8QTSqxDb1nzBQlEl0M8aAkzIEALw_wcB
 
@@ -278,15 +278,15 @@ Credential 可以說是讓 n8n 節點得以和各種 AI 工具、 API 和資料�
   * Choose an imported project 選擇 Create Project 並命名為 n8n-Google
   * 最後點選 Create key 則可拿到 API key
 
-將拿到的 API key 複製下來，回到 n8n Credentials 頁面，新增名為 "Google Gemini(PaLM) Api" 的 Credential。
+將拿到的 API key 複製下來，回到 n8n Credentials 頁面，新增 **Google Gemini** 的 Credential。
 
 <img width="1488" height="630" alt="image" src="https://github.com/user-attachments/assets/29ee9abf-c9af-4363-b9c6-eff1938f6ec8" />
 
 沒問題的話會顯示 **Connection tested successfully**，到此，Google Gemini 的 Credential 設置便完成了。
 
-**2. PostgreSQL**
+#### 2. PostgreSQL
 
-首先打開 n8n Credentials 頁面，新增名為 "Postgres" 的 Credential。
+首先打開 n8n Credentials 頁面，新增 **Postgres** 的 Credential。
 
 這裡的 Credential 設置要按照你當初建立 PostgreSQL 容器時的指令變數來設置。
 * Host：填入容器名稱 (--name 後的變數，預設為 "PostgreSQL-school")
@@ -298,6 +298,78 @@ Credential 可以說是讓 n8n 節點得以和各種 AI 工具、 API 和資料�
 
 設置完成後，點擊 **Save**，沒問題的話會顯示 **Connection tested successfully**，到此 PostgreSQL 的 Credential 也設置完成了。
 
-**3. Gmail, Google Sheet, Google Drive**
+#### 3. Gmail, Google Sheets, Google Drive
 
-首先前往 [Google Cloud][]
+首先打開 n8n Credentials 頁面，新增 Gmail 的 Credential，將其中 **OAuth Redirect URL** 的內容記下來。
+
+接著前往 [Google Cloud][google_cloud_url] 網頁，按**免費試用**，接著執行各個註冊程序。
+
+  [google_cloud_url]:https://cloud.google.com/free?utm_source=google&utm_medium=cpc&utm_campaign=japac-TW-all-zh-dr-BKWS-all-core-trial-EXA-dr-1710102&utm_content=text-ad-none-none-DEV_c-CRE_768448051378-ADGP_Hybrid+%7C+BKWS+-+BRO+%7C+Txt+-+Generic+Cloud+-+Cloud+Generic+-+Core+GCP+-+TW_en-KWID_6458750523-aud-970366092687:kwd-6458750523&userloc_9222658-network_g&utm_term=KW_google%20cloud&gclsrc=aw.ds&gad_source=1&gad_campaignid=19506976549&gclid=EAIaIQobChMIv7XJ2ZKrkQMVQNIWBR3_2jSbEAAYASAAEgK--PD_BwE
+  
+前往 Google Cloud 主頁面，左上角**選取專案**。
+
+<img width="385" height="66" alt="image" src="https://github.com/user-attachments/assets/b1a7c175-d147-4f03-9357-2d8f1b23cf5c" />
+
+選擇**新增專案**，專案名稱可以自己取 (這裡取為 "n8n-tutorial")，接著按**建立**。
+
+等待專案建立完成，在**選取專案**中選取該專案，接著便可前往下一步。
+
+首先在上方搜尋欄中分別查找 Gmail, Google sheets, Google drive。
+
+<img width="883" height="70" alt="image" src="https://github.com/user-attachments/assets/5e090eba-62bb-470a-a775-123ab6a79672" />\
+<img width="879" height="66" alt="image" src="https://github.com/user-attachments/assets/7da79405-3a2a-4fba-b517-3b6e50d050cd" />
+<img width="879" height="70" alt="image" src="https://github.com/user-attachments/assets/98888e6e-60ab-4098-8fd3-b5e9dd72fd3e" />
+
+點進去後分別按下**啟用**。
+
+全部啟用完畢後，在搜尋欄查找 OAuth。
+
+<img width="869" height="66" alt="image" src="https://github.com/user-attachments/assets/b45d9544-81ac-4d0e-b022-95154ee465fe" />
+
+點進去後，首先要設定 Google 驗證平台，點擊**開始**。
+
+* 應用程式資訊：
+  * 應用程式名稱：n8n
+  * 使用者支援電子郵件：自己登入 Google Cloud 的電子郵件
+* 目標對象：選擇**外部**
+* 聯絡資訊： 自己登入 Google Cloud 的電子郵件
+* 完成：勾選選項
+
+最後按下**建立**，則成功設定驗證平台。
+
+在同一個頁面 (OAuth)，左側欄選擇**目標對象 -> 測試使用者**，確認自己的 gmail 有沒有在其中。
+
+<img width="665" height="294" alt="image" src="https://github.com/user-attachments/assets/20817fde-158f-46eb-a54c-3b0862426921" />
+
+若無，則點選 **Add users**，並填入自己的 gmail。
+
+接著在左側欄選擇**用戶端 -> 建立用戶端**。
+
+* 應用程式類型：網頁應用程式
+* 名稱：n8n
+* 已授權的重新導向 URL：回到剛剛 n8n Credentials 的頁面，Gmail Credential 中的 **OAuth Redirect URL** 複製過去
+
+接著按下**建立**，會出現**用戶端 ID**和**用戶端密碼**，將這兩項分別複製到 Gmail Credential 的對應欄位。
+
+<img width="1479" height="722" alt="image" src="https://github.com/user-attachments/assets/ac6ecae2-01e3-434c-9ab2-3a012b21b96c" />
+
+接著按下方的 **Sign in with Google**
+
+<img width="620" height="394" alt="image" src="https://github.com/user-attachments/assets/2f285dc7-55c9-4093-8b4e-cb87c1043feb" />
+<img width="604" height="848" alt="image" src="https://github.com/user-attachments/assets/d5f19f71-fb8e-4340-a0e2-10ae79513c0f" />
+
+點擊**繼續**，看到 **Connection successful** 即代表成功。
+
+Google sheet 和 Google drive 的 Credential 可直接使用**同一個**用戶端 ID和用戶端密碼，並且一樣要記得登入。
+
+全部 Credential 設置完後， n8n Credentials 的頁面應該像下圖一樣。
+
+<img width="1505" height="678" alt="image" src="https://github.com/user-attachments/assets/1e7c9885-49d0-4937-b712-6f97dbd2fe0c" />
+
+至此，我們所需要的 Credential 便設置完成了。
+
+備註：若在設定完全部的 Credential 之前關閉 Google Cloud OAuth 頁面，用戶端密碼將無法再被複製，這時可以點擊 **Add secret** 來取得額外的密碼 (同個用戶端最多只能有兩個密碼)。
+
+
+### 簡易工作流的介紹與示範
+
