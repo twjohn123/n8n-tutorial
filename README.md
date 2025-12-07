@@ -32,7 +32,7 @@ n8n 技術文章
 
 ### 2. [n8n 的基本節點和工作流認識](#introduction)
 
-* 各節點的介紹和操作實例
+* 各節點的類型和功能介紹
 * Credential 的介紹和設置
 * 簡易工作流的介紹與示範
 
@@ -209,15 +209,95 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
 
 前者全部完成之後，回到 n8n 主頁面，按下 **Start from scratch** 便可開始 n8n 之旅了。
 
-### 各節點的介紹和操作實例
+### 各節點的類型和功能介紹
 
-n8n 有許多不同種類和功能的節點，我將從其中挑選幾個重要或常用的來進行介紹。
+n8n 有許多不同類型和功能的節點，我將從其中挑選幾個重要或常用的來進行介紹。
 
 **1. Trigger Manually**
 
 <img width="306" height="223" alt="image" src="https://github.com/user-attachments/assets/d69efc4c-d30f-41dc-af9c-53318be56eef" />
+<img width="456" height="100" alt="image" src="https://github.com/user-attachments/assets/23fcd836-cb1c-4701-b6df-5fe3352c0ff1" />
 
 * 類型：觸發節點
 * 功能：點擊 **Execute workflow** 後，此節點便會輸出一個信號，用來觸發在此之後的下個節點。
 
-**2. **
+**2. Merge**
+
+<img width="153" height="207" alt="image" src="https://github.com/user-attachments/assets/81fca06c-5877-4d3e-850e-69201b769ea9" />
+<img width="469" height="97" alt="image" src="https://github.com/user-attachments/assets/6af9b189-d4cd-4d19-bb57-2e0577238eb3" />
+
+* 類型：資料處理/資料變形節點
+* 功能：此節點有兩個重要的功能：
+  * 資料合併：將多條分支 (branch) 的資料合併。
+  * 工作流檢查點 (checkpoint)：前面所有分支都必須完成才會繼續往下的流程。
+ 
+**3. Google Gemini**
+
+<img width="310" height="175" alt="image" src="https://github.com/user-attachments/assets/ca0b3b5c-1b53-4a9e-a511-35c1c4cb5580" />
+<img width="481" height="74" alt="image" src="https://github.com/user-attachments/assets/7bdfb53a-b5a9-4aeb-8ea5-e925852c23d1" />
+
+* 類型：AI節點
+* 功能：此節點的功能十分強大，你可以透過它來詢問問題、分析圖片、轉錄語音、分析文件等。根據給予的提示詞 (prompt) 則會生成不同的回應。
+
+**4. Gmail**
+
+<img width="201" height="196" alt="image" src="https://github.com/user-attachments/assets/4c093aa2-4d02-4067-9299-c1442dc110c6" />
+<img width="481" height="61" alt="image" src="https://github.com/user-attachments/assets/d575ca1b-a300-490c-8969-ce20db053845" />
+
+* 類型：觸發/輸出節點
+* 功能：根據節點的設定，此節點可以當作輸入或輸出節點。
+  * 作為輸入：收到 Gmail 的時候此節點會自動觸發。
+  * 作為輸出：此節點可向其他信箱發送訊息，或者將訊息標示為已讀/未讀、新增草稿、刪除特定信件等。
+
+**5. Postgres**
+
+<img width="227" height="205" alt="image" src="https://github.com/user-attachments/assets/c122e832-cf4c-4f7d-86cc-c5b5e2b5fe4d" />
+<img width="481" height="69" alt="image" src="https://github.com/user-attachments/assets/9b561053-3dc6-46bd-901a-f62a00c6fd4c" />
+
+* 類型：觸發/輸出節點
+* 功能：根據節點的設定，此節點可以當作輸入或輸出節點。
+  * 作為輸入：Postgres 中有檢測到特定活動時自動觸發。
+  * 作為輸出：此節點可向 Postgres 資料庫做多項變動，例如新增一行資料、刪除特定資料、執行特定 SQL query 等。
+
+### Credential 的介紹和設置
+
+前面我們介紹了幾個常用和重要的節點，接著我們要來介紹讓他們能運作的心臟：**Credential**。
+
+Credential 可以說是讓 n8n 節點得以和各種 AI 工具、 API 和資料庫有效並安全溝通的鑰匙，像是 Google Gemini, Gmail, Postgres 皆需要有 Credential 才能正常運作。所以在使用這些節點之前，我們必須要先設置 Credential。
+
+要新增 Credential，可以直接從該結點中新增，或者直接返回 n8n 主頁面 -> Credentials 來新增。
+
+**1. Google Gemini**
+
+首先前往 [Google AI studio][google_ai_studio_url]網頁，點選 **Get started**，接著執行各個註冊程序。
+
+  [google_ai_studio_url]:https://aistudio.google.com/welcome?utm_source=PMAX&utm_medium=display&utm_campaign=FY25-global-DR-pmax-1710442&utm_content=pmax&gclsrc=aw.ds&gad_source=1&gad_campaignid=21772729580&gbraid=0AAAAACn9t66KgxFqg0b-uPDUBc_gGg3Qz&gclid=Cj0KCQiA6NTJBhDEARIsAB7QHD1s9RWtaHhnfuBdhsEx1-Iv3UkDVuMaX6tP8QTSqxDb1nzBQlEl0M8aAkzIEALw_wcB
+
+註冊完成後，點選主頁面右下角的 **Get API key -> Create API key**。
+  * Name your key 可留空
+  * Choose an imported project 選擇 Create Project 並命名為 n8n-Google
+  * 最後點選 Create key 則可拿到 API key
+
+將拿到的 API key 複製下來，回到 n8n Credentials 頁面，新增名為 "Google Gemini(PaLM) Api" 的 Credential。
+
+<img width="1488" height="630" alt="image" src="https://github.com/user-attachments/assets/29ee9abf-c9af-4363-b9c6-eff1938f6ec8" />
+
+沒問題的話會顯示 **Connection tested successfully**，到此，Google Gemini 的 Credential 設置便完成了。
+
+**2. PostgreSQL**
+
+首先打開 n8n Credentials 頁面，新增名為 "Postgres" 的 Credential。
+
+這裡的 Credential 設置要按照你當初建立 PostgreSQL 容器時的指令變數來設置。
+* Host：填入容器名稱 (--name 後的變數，預設為 "PostgreSQL-school")
+* Database：填入資料庫名稱 (-e POSTGRES_DB= 後的變數，預設為 "schooldb")
+* User：填入使用者名稱 (-e POSTGRES_USER= 後的變數，預設為 "myuser")
+* Password：填入密碼 (-e POSTGRES_PASSWORD= 後的變數，預設為 "mypassword")
+
+<img width="1483" height="686" alt="image" src="https://github.com/user-attachments/assets/f2ea4d5a-6611-4f72-94d0-57239faa9e90" />
+
+設置完成後，點擊 **Save**，沒問題的話會顯示 **Connection tested successfully**，到此 PostgreSQL 的 Credential 也設置完成了。
+
+**3. Gmail, Google Sheet, Google Drive**
+
+首先前往 [Google Cloud][]
