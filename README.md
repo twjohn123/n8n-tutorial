@@ -30,7 +30,7 @@ n8n 技術文章
 * 本地 PostgreSQL 安裝
 * n8n 和 PostgreSQL 的連接教學
 
-### 2. n8n 的基本節點和工作流認識
+### 2. [n8n 的基本節點和工作流認識](#introduction)
 
 * 各節點的介紹和操作實例
 * Credential 的介紹和設置
@@ -70,7 +70,9 @@ n8n 技術文章
 * 工作流2：Send.json
 
 
-<h2 id="deployment">n8n的安裝和部署教學</h2>
+<h2 id="deployment">n8n 的安裝和部署教學</h2>
+
+
 
 ### 本地 Docker 安裝
 
@@ -107,7 +109,7 @@ n8n 是一套開源 (Open Source) 的工作流程自動化工具。它的核心�
 
 上一步完成了 Docker 的安裝，接著要在本地端安裝 n8n 。
 
-首先打開Windows的**命令提示字元** (可以在搜尋欄中輸入cmd來開啟) ，接著輸入以下指令：
+首先打開 Windows 的**命令提示字元** (可以在搜尋欄中輸入cmd來開啟) ，接著輸入以下指令：
 
     docker run --name n8n -p 5678:5678 -v n8n-file -d n8nio/n8n
 
@@ -118,9 +120,11 @@ n8n 是一套開源 (Open Source) 的工作流程自動化工具。它的核心�
 * -v n8n-file：用於指定 Volume 儲存位置，可設置 Volume 名稱或絕對路徑。設置為名稱時將由 Docker 來管理位置，並使用 Docker 來找取資料。設置為絕對路徑時則可直接從路徑中找取資料。在此使用 "n8n-file" 名稱。
 * -d n8nio/n8n：用於指定運行方式與映像檔，在此為使用 "n8nio/n8n" 映像檔。
 
+**⚠️以上指令變數在容器創建之後皆無法再次變更，請注意⚠️**
+
 <img width="1466" height="647" alt="image" src="https://github.com/user-attachments/assets/05b34065-42d9-4a66-87a5-b0ff50b9298b" />
 
-執行上列指令將自動下載 n8nio/n8n 映像檔，並由此創建一個名為 n8n 的容器。
+執行上列指令將自動下載 "n8nio/n8n" 映像檔，並由此創建一個名為 "n8n" 的容器。
 
 <img width="1574" height="602" alt="image" src="https://github.com/user-attachments/assets/e83abfcd-caa0-4d7c-9942-81e505104609" />
 
@@ -134,7 +138,7 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
 
 剛剛我們也安裝好本地 n8n，接著我們便要安裝PostgreSQL (資料庫)。
 
-首先一樣首先打開Windows的**命令提示字元** (可以在搜尋欄中輸入cmd來開啟)，接著輸入以下指令：
+首先一樣首先打開 Windows 的**命令提示字元** (可以在搜尋欄中輸入cmd來開啟)，接著輸入以下指令：
 
     docker run --name PostgreSQL-school -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=schooldb -p 5432:5432 -v postgres-data -d postgres
 
@@ -149,4 +153,64 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
 * -v n8n-file：用於指定 Volume 儲存位置，可設置 Volume 名稱或絕對路徑。設置為名稱時將由 Docker 來管理位置，並使用 Docker 來找取資料。設置為絕對路徑時則可直接從路徑中找取資料。在此使用 "postgres-data" 名稱。
 * -d n8nio/n8n：用於指定運行方式與映像檔，在此為使用 "postgres" 映像檔。
 
+**⚠️以上指令變數在容器創建之後皆無法再次變更，請注意⚠️**
 
+執行上列指令將自動下載 "postgres" 映像檔，並由此創建一個名為 "PostgreSQL-school" 的容器。
+
+到此，本地 PostgreSQL 也安裝完成了。
+
+### n8n 和 PostgreSQL 的連接教學
+
+剛剛前面有提及，每個容器之間是互不干涉的，但是 n8n 和 PostgreSQL 分別裝在不同的容器中，那要怎麼讓他們互相溝通呢?
+
+這時便需要在 Docker 內部架設一條網路 (network) 來實現容器和容器間的溝通。
+
+打開 Windows 的**命令提示字元**，輸入以下指令：
+
+    docker network create my_internal_net
+
+此指令將在 Docker 中創建一條名為 "my_internal_net" 的網路。
+
+剛剛也有提及，指令變數在容器創建之後便無法變更，所以我們需要重建容器來連接容器之間的網路。
+
+輸入以下指令：
+
+    docker rm n8n
+    docker rm PostgreSQL-school
+
+這兩個指令將分別刪除名為 "n8n" 和 "PostgreSQL-school" 的容器。
+
+接著輸入原本創建 n8n 和 PostgreSQL 容器的指令，但在裡面再加上 "--network my_internal_net"
+
+    docker run --name n8n --network my_internal_net -p 5678:5678 -v n8n-file -d n8nio/n8n
+    
+    docker run --name PostgreSQL-school --network my_internal_net -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=schooldb -p 5432:5432 -v postgres-data -d postgres
+
+**⚠️注意：不可將變數設在 -d 之後，否則開啟容器時會出錯⚠️**
+
+如此，n8n 和 PostgreSQL 的容器便安裝完成，且有網路來讓彼此互相溝通。
+
+到此，安裝的步驟就全部完成了。
+
+
+<h2 id="introduction">n8n 的基本節點和工作流認識</h2>
+
+在使用 n8n 之前，我們需要先將 n8n 的容器打開，並透過瀏覽器來開啟 n8n 頁面。
+
+<img width="1575" height="494" alt="image" src="https://github.com/user-attachments/assets/8d65981f-bb2f-441d-b5df-683b1672460e" />
+
+<img width="1571" height="857" alt="image" src="https://github.com/user-attachments/assets/eab7f477-6936-4514-a323-c39e1a54d2e3" />
+
+接著便是填入你的註冊資訊，便可以開始執行 n8n 的作業了。
+
+關於 free license key 的部分可拿可不拿，但是建議是拿一下，畢竟不拿白不拿。
+
+拿到 license key 之後，前往 **Settings -> Usage and plan -> Enter activation key** 便可輸入 license key 來開通進階功能了。
+
+前者全部完成之後，回到 n8n 主頁面，按下 **Start from scratch** 便可開始 n8n 之旅了。
+
+### 各節點的介紹和操作實例
+
+n8n 有許多不同種類和功能的節點，我將從其中挑選幾個重要或常用的來進行介紹。
+
+<img width="306" height="223" alt="image" src="https://github.com/user-attachments/assets/d69efc4c-d30f-41dc-af9c-53318be56eef" />
