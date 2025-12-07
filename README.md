@@ -36,7 +36,7 @@ n8n 技術文章
 * Credential 的介紹和設置
 * 簡易工作流的介紹與示範
 
-### 3. 資料庫的基本節構和功能
+### 3. [資料庫的基本節構和功能](#database)
 
 * PostgreSQL 的節構介紹
 * PostgreSQL 的欄位和規則建立
@@ -70,9 +70,9 @@ n8n 技術文章
 * 工作流2：Send.json
 
 
+
+
 <h2 id="deployment">n8n 的安裝和部署教學</h2>
-
-
 
 ### 本地 Docker 安裝
 
@@ -374,4 +374,19 @@ Google sheet 和 Google drive 的 Credential 可直接使用**同一個**用戶�
 ### 簡易工作流的介紹與示範
 
 這裡我們創建一個簡單的工作流，用以示範各節點如何運行。
+
+
+
+
+<h2 id="database">資料庫的基本節構和功能</h2>
+
+n8n 能夠利用的資料庫有很多種，例如 MySQL, Oracle Database, Supabase等，而這裡我們要利用的則是 PostgreSQL。
+
+PostgreSQL 可以算是所有資料庫中功能最齊全、且最具彈性的選擇，接下來我將就等等會用到的部分進行簡單的講解。
+
+### PostgreSQL 的節構介紹
+
+首先為 PostgreSQL 的整體結構，因為我們暫時只會用到儲存、讀取資料的功能，這裡我們將聚焦於 **Schemas** 中 **Tables** 的部分。
+
+<img width="336" height="932" alt="image" src="https://github.com/user-attachments/assets/ae398c49-0a2f-4bf9-bfc1-55300ba7f070" />
 
