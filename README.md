@@ -528,11 +528,11 @@ UNION ALL
 
 然後是 ProjectCodeInfo，創建如下圖的欄位：
 
-<img width="791" height="109" alt="image" src="https://github.com/user-attachments/assets/7a9984d8-0d5d-49b4-9f45-05179d29d838" />
+<img width="569" height="101" alt="image" src="https://github.com/user-attachments/assets/00213a69-e048-4830-b687-270805d4d32c" />
 
 最後是 ProjectHostInfo：
 
-<img width="704" height="106" alt="image" src="https://github.com/user-attachments/assets/f94d88a3-be13-425d-bc51-4f73958f9ba8" />
+<img width="591" height="95" alt="image" src="https://github.com/user-attachments/assets/6da63c47-0855-4cbe-973d-040c21baaa48" />
 
 如此我們便完成了基本資料輸入形式的創建。
 
@@ -549,31 +549,35 @@ UNION ALL
 這裡要記得先把每個未選擇 Credential 的節點 (節點右下角有紅色警示符號的) 都重新設置對應的 Credential。
 
 接下來便來介紹對應的節點：
-* 開始執行：即 "Trigger manually"。按下 **Execute workflow** 後開始執行整個工作流。
-* 重製所有 table：為 Execute Query 模式的 Postgres 節點。此節點所執行的 query 將重製所以的 table (part_time_main_info, project_code_info, project_host_info)。
-* 取得試算表資料：這裡請把這個節點中的 **File -> From list** 後的檔案調整為 "**郵件資料_輸入**"，此節點將把此檔案 (試算表) 下載下來並交給下一個節點。
-* Extract From XLSX
-  * Get PartTimeMainInfo：取得 PartTimeMainInfo 工作表中各行的資訊並轉換為 json 格式。
-  * Get ProjectCodeInfo：取得 ProjectCodeInfo 工作表中各行的資訊並轉換為 json 格式。
-  * Get ProjectHostInfo：取得 ProjectHostInfo 工作表中各行的資訊並轉換為 json 格式。
-* 變換日期格式：將日期變換格式 (範例：114/11 -> 2025-11)，使日期可以被資料庫所儲存。
-* Edit Fields：將各個欄位轉換名稱，並剔除不必要的資料 (這個版本沒有會被剔除的資料)，使各個欄位可以被上傳到資料庫的對應欄位。
-* Upsert (Insert or Update)
-  * Upsert part_time_main_info：對輸入進的資料執行 Upsert，並上傳到 part_time_main_info table 中。
-  * Upsert project_code_info：對輸入進的資料執行 Upsert，並上傳到 project_code_info table 中。
-  * Upsert project_host_info：對輸入進的資料執行 Upsert，並上傳到 project_host_info table 中。
-* 等待所有分支完成：即為 "Merge"，此處作為工作留的檢查點，所有前者的分支都要執行完成才會執行下一步。
-* 提取資料庫資料：這個節點會提取來自 part_time_main_info 和 project_code_info 的資料。
-  * part_time_main_info 會提取其 **id** 和 **project_code** 欄位；
-  * project_code_info 會提取其 **corresponding_project** 和 **code_filter_condition** 欄位；
-  * 提取完成後會將兩者資料結合，並交送給下一個節點。
-* 將所有資料整合並建立prompt：Javascript 節點。這裡的 Javascript 會將前面所收到的資料全部整合，並且建立提示詞 (prompt)，準備傳送給 AI 做處理。
-* AI 篩選計畫代碼：為 Message a Model 模式的 Google Gemini 節點，這裡的 Model 選擇 "**models/gemini-2.5-flash**"，Prompt 則直接貼上上個 Javascript 節點的輸出。此節點預期會輸出包含 **id** 和 **corresponding_project** 整合而成的 json 陣列。
-* 提取AI回應並分割物件：Javascript 節點。這裡的 Javascript 會將前面 AI (Google Gemini) 的回應進行拆解，並將其分割為多個物件，以便後續處理。
-* 轉為SQL物件：Javascript 節點。這裡的 Javascript 會整合前個節點輸出的資料並製作成可被 query 閱讀的物件，用以將資料傳回資料庫。
-* 篩選計畫代碼和日期 & 輸入計畫名稱：為 Execute Query 模式的 Postgres 節點。此節點會執行以下的動作：
-  * 確認合法日期：start_date 必須在 CURRENT_DATE (今天) 之前；end_date 必須在該月之內 (範例：11月 -> 11/1 ~ 11/30)。
-  * 根據 AI 的回應，配合合法日期限制，將特定欄位資料 (由 AI 回傳的 **id** 決定) 嵌入計畫名稱，並將該欄位的 **send_email_flag 設為 true**，代表此欄位的對象會被寄送 Gmail。
+
+* 上傳資料到資料庫
+  * 開始執行：即 "Trigger manually"。按下 **Execute workflow** 後開始執行整個工作流。
+  * 重製所有 table：為 Execute Query 模式的 Postgres 節點。此節點所執行的 query 將重製所以的 table (part_time_main_info, project_code_info, project_host_info)。
+  * 取得試算表資料：這裡請把這個節點中的 **File -> From list** 後的檔案調整為 "**郵件資料_輸入**"，此節點將把此檔案 (試算表) 下載下來並交給下一個節點。
+  * Extract From XLSX
+    * Get PartTimeMainInfo：取得 PartTimeMainInfo 工作表中各行的資訊並轉換為 json 格式。
+    * Get ProjectCodeInfo：取得 ProjectCodeInfo 工作表中各行的資訊並轉換為 json 格式。
+    * Get ProjectHostInfo：取得 ProjectHostInfo 工作表中各行的資訊並轉換為 json 格式。
+  * 變換日期格式：將日期變換格式 (範例：114/11 -> 2025-11)，使日期可以被資料庫所儲存。
+  * Edit Fields：將各個欄位轉換名稱，並剔除不必要的資料 (這個版本沒有會被剔除的資料)，使各個欄位可以被上傳到資料庫的對應欄位。
+  * Upsert (Insert or Update)
+    * Upsert part_time_main_info：對輸入進的資料執行 Upsert，並上傳到 part_time_main_info table 中。
+    * Upsert project_code_info：對輸入進的資料執行 Upsert，並上傳到 project_code_info table 中。
+    * Upsert project_host_info：對輸入進的資料執行 Upsert，並上傳到 project_host_info table 中。
+  * 等待所有分支完成：即為 "Merge"，此處作為工作留的檢查點，所有前者的分支都要執行完成才會執行下一步。
+  
+* 將資料庫中的資料交給 AI (Google Gemini) 做處理
+  * 提取資料庫資料：這個節點會提取來自 part_time_main_info 和 project_code_info 的資料。
+    * part_time_main_info 會提取其 **id** 和 **project_code** 欄位。
+    * project_code_info 會提取其 **corresponding_project** 和 **code_filter_condition** 欄位。
+    * 提取完成後會將兩者資料結合，並交送給下一個節點。
+  * 將所有資料整合並建立prompt：Javascript 節點。這裡的 Javascript 會將前面所收到的資料全部整合，並且建立提示詞 (prompt)，準備傳送給 AI 做處理。
+  * AI 篩選計畫代碼：為 Message a Model 模式的 Google Gemini 節點，這裡的 Model 選擇 "**models/gemini-2.5-flash**"，Prompt 則直接貼上上個 Javascript 節點的輸出。此節點預期會輸出包含 **id** 和 **corresponding_project** 整合而成的 json 陣列。
+  * 提取AI回應並分割物件：Javascript 節點。這裡的 Javascript 會將前面 AI (Google Gemini) 的回應進行拆解，並將其分割為多個物件，以便後續處理。
+  * 轉為SQL物件：Javascript 節點。這裡的 Javascript 會整合前個節點輸出的資料並製作成可被 query 閱讀的物件，用以將資料傳回資料庫。
+  * 篩選計畫代碼和日期 & 輸入計畫名稱：為 Execute Query 模式的 Postgres 節點。此節點會執行以下的動作：
+    * 確認合法日期：start_date 必須在 CURRENT_DATE (今天) 之前；end_date 必須在該月之內 (範例：11月 -> 11/1 ~ 11/30)。
+    * 根據 AI 的回應，配合合法日期限制，將特定欄位資料 (由 AI 回傳的 **id** 決定) 嵌入計畫名稱，並將該欄位的 **send_email_flag 設為 true**，代表此欄位的對象會被寄送 Gmail。
 
 到此，我們已探討完 1_Upload 工作流的運作方式。接著，我們來看看下一個工作流。
  
@@ -585,3 +589,27 @@ UNION ALL
 
 這裡一樣要記得先把每個未選擇 Credential 的節點 (節點右下角有紅色警示符號的) 都重新設置對應的 Credential。
 
+接下來一樣介紹對應的節點：
+* 讀取 Gmail 的插入圖片
+  * 下載圖片：在這裡請先把 image 資料夾中的圖片 **mail_embed_image.jpg** 上傳到自己的 Google drive (雲端硬碟) 中，接著一樣將 **File -> From list** 後的檔案調整為 **mail_embed_image.jpg**，此節點將把此檔案 (jpg圖檔) 下載下來並交給下一個節點。
+  * 圖片轉為可嵌入的模式：此 javascript 節點會將傳入的圖片做 base64 處理，使其可以以 html 的表示法直接嵌入到 Gmail 內文中。
+
+* 創建各個日期格式：
+  * Date & Time
+    * ROC Date：生成當下時間的西元日期 (範例：2025/12)，為什麼不是民國日期等等會再提。
+    * ROC Month：生成當下時間的中文月份 (範例：12月)。
+    * AD Date：生成當下時間的西元日期 (範例：December 2025)。
+    * AD Month：生成當下時間的英文月份 (範例：December)。
+  * AD to ROC：為 ROC Date 後的節點。因為 Date & TIme 節點只能生成西元日期，所以這裡要使用這個節點將西元改成民國 (範例：2025/12 -> 114年12月)。
+
+* 使用 query 篩選資料庫資料
+  * 取得合法助理資訊：此為 Select 模式的 Postgres 節點，其篩選條件為：
+    * name 不可為 null
+    * email 不可為 null
+    * send_email_flag 必須為 true
+    * 滿足以上條件的每一行都會被輸出
+  * 取得不重複之合法教授資訊：此為 Execute Query 模式的 Postgres 節點，其篩選條件為：
+    * 每個教授只能輸出一次
+    * 必須為 send_email_flag
+    * 若有多個重複的合法教授，挑選最新的那一行資料
+   
