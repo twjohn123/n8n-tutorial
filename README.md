@@ -47,20 +47,21 @@ n8n 技術文章
 
 ### 4. [系統的架構和設計](#system)
 
+* 試算表：資料欄位的形式
 * 工作流1：資料傳進資料庫的具體架構
 * 工作流2：篩選條件和寄送信件的具體架構
-
-### 5. 校務自動化的應用實例
+  
+### 5. [校務自動化的應用實例](#result)
 
 * 系統的執行結果
 * 可行的系統擴充和延伸
 
-### 6. 結語：n8n 的校務價值和創新可能性
+### 6. [結語：n8n 的校務價值和創新可能性](#conclution)
 
 * 低程式碼和與AI結合的優勢
 * 未來可行的應用場景
 
-### 7. 附錄
+### 7. [附錄](#appendix)
 
 * workflow 資料夾：系統的工作流
 * SQL script 資料夾：PostgreSQL 的 SQL Query
@@ -500,11 +501,42 @@ UNION ALL
 
 
 
+
+
 <h2 id="system">系統的架構和設計</h2>
 
-前面講了非常多，我們總算可以進入正題 - 介紹「每月自動寄送信件」系統的工作流了。
+前面講了非常多，我們總算可以進入正題 - 介紹「每月自動寄送信件」的系統了。
 
-這裡我將各個 n8n 工作流放入 Workflow 的資料夾中：
+只不過在介紹工作流之前，還有一件需要處理的事，那便是搞清楚要怎麼上傳資料，並了解資料的欄位和格式應該為何。
+
+這裡請打開你的 **Google 試算表** (Google Sheets)，接著**創建新的試算表**。這個試算表便是我們輸入資料的地方。
+
+試算表的名稱暫時改成「郵件資料_輸入」，然後看到左下角 "工作表1" 旁的 **+** 按鈕，點選它讓整個檔案有 **3** 個工作表。
+
+接著我們重新命名各個工作表：
+* 工作表1 -> PartTimeMainInfo
+* 工作表2 -> ProjectCodeInfo
+* 工作表3 -> ProjectHostInfo
+
+如此，下方欄位應該長得像這樣：
+
+<img width="769" height="49" alt="image" src="https://github.com/user-attachments/assets/b5de32f8-f5bb-4606-ad8c-b82a621b1539" />
+
+接著到 PartTimeMainInfo 的工作表，創建各個欄位，如下圖：
+
+<img width="1645" height="97" alt="image" src="https://github.com/user-attachments/assets/f44d51c6-08cb-4fb0-ad09-c2840ec17f58" />
+
+然後是 ProjectCodeInfo，創建如下圖的欄位：
+
+<img width="791" height="109" alt="image" src="https://github.com/user-attachments/assets/7a9984d8-0d5d-49b4-9f45-05179d29d838" />
+
+最後是 ProjectHostInfo：
+
+<img width="704" height="106" alt="image" src="https://github.com/user-attachments/assets/f94d88a3-be13-425d-bc51-4f73958f9ba8" />
+
+如此我們便完成了基本資料輸入形式的創建。
+
+這裡我將各個 n8n 工作流放入 workflow 的資料夾中：
 * 1_Upload：此工作流負責將資料上傳到資料庫並交由 AI (Google Gemini) 進行對應處理
 * 2_Send：此工作流負責將比較和讀取資料庫中的資料，並將其透過 Gmail 發送給特定的人
 
