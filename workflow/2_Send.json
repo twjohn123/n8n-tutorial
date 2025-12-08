@@ -1,0 +1,707 @@
+{
+  "name": "2_Send",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "format": "custom",
+        "customFormat": "yyyy/M",
+        "outputFieldName": "roc_date",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        0,
+        224
+      ],
+      "id": "aa777126-fbf2-47a2-9876-21a0e003a4f6",
+      "name": "ROC Date"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "format": "custom",
+        "customFormat": "M月",
+        "outputFieldName": "roc_month",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        0,
+        512
+      ],
+      "id": "f7c773a8-6875-4666-a3b6-cf7c3b250871",
+      "name": "ROC Month"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 5,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        400,
+        416
+      ],
+      "id": "c3e62d70-35f0-450f-a4b7-5603a6aa7936",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "content": "## 創建各個日期格式",
+        "height": 640,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "98acb3bc-6004-4031-95dc-d983cf1c0def",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        624,
+        656
+      ],
+      "id": "81841a76-7058-4350-9717-0ba548213a84",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 取得所有輸入項目，確保它是一個陣列\nconst items = $input.all(); \n\n// 使用 .map() 遍歷陣列中的每一個項目\nreturn items.map(item => {\n    // === 您的民國年邏輯放在這裡 ===\n    \n    // 存取前一個 Date & Time 節點的輸出資料\n    // 請確認前一個節點輸出資料的欄位名稱 (例如：formattedDate)\n    const inputDate = item.json.roc_date; \n    \n    // 分割年/月\n    const [year, month] = inputDate.split('/');\n    \n    // 計算民國年 (西元年 - 1911)\n    const rocYear = parseInt(year) - 1911;\n    \n    // 將計算結果寫入新的欄位\n    item.json.roc_date = `${rocYear}年${month}月`;\n    \n    // 回傳處理後的項目\n    return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        224
+      ],
+      "id": "73940823-e657-4c38-b319-7f0f666dfeb5",
+      "name": "AD to ROC"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "format": "custom",
+        "customFormat": "MMMM yyyy",
+        "outputFieldName": "ad_date",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        0,
+        368
+      ],
+      "id": "02dee161-fd61-49da-8b20-99bd473b9194",
+      "name": "AD Date"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "format": "custom",
+        "customFormat": "MMMM",
+        "outputFieldName": "ad_month",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        0,
+        656
+      ],
+      "id": "e0063180-b8d4-4c59-b264-935969bef027",
+      "name": "AD Month"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        624,
+        976
+      ],
+      "id": "274c0254-2767-40f6-b361-7f02d7b4754c",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1216,
+        656
+      ],
+      "id": "833bae8e-f1e3-4ec5-b0d6-3cf25c0c7a62",
+      "name": "Wait 1",
+      "webhookId": "ee427732-cb64-4267-9819-6b0643a27c56"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1216,
+        976
+      ],
+      "id": "fc285096-b2e3-48f2-a484-4f64cac853bd",
+      "name": "Wait 2",
+      "webhookId": "ee427732-cb64-4267-9819-6b0643a27c56"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        832,
+        656
+      ],
+      "id": "a5bed22b-57d8-4b46-b302-18ae749290fc",
+      "name": "Loop Over Items 1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        832,
+        976
+      ],
+      "id": "2f30d0b3-31c8-45e5-bc1d-d71c1c3b2a42",
+      "name": "Loop Over Items 2"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "part_time_main_info",
+          "mode": "list",
+          "cachedResultName": "part_time_main_info"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "name",
+              "condition": "IS NOT NULL"
+            },
+            {
+              "column": "email",
+              "condition": "IS NOT NULL"
+            },
+            {
+              "column": "send_email_flag",
+              "value": "TRUE"
+            }
+          ]
+        },
+        "options": {
+          "outputColumns": [
+            "name",
+            "email",
+            "project_code",
+            "project_name"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        48,
+        880
+      ],
+      "id": "3280503e-f482-4811-98b6-67f76308c4bb",
+      "name": "取得合法助理資訊",
+      "credentials": {
+        "postgres": {
+          "id": "T3LSn3rixEiNn1wP",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT DISTINCT ON (t1.project_host)\n    t1.project_host,    -- 選取 part_time_main_info (t1) 的所有欄位\n    t2.host_email       -- 選取 project_host_info (t2) 的 host_email 欄位\nFROM\n    part_time_main_info t1\nLEFT JOIN\n    project_host_info t2 ON t1.project_host = t2.host_name\nWHERE\n    t1.send_email_flag = TRUE  -- 是否對其寄送email\nORDER BY\n    t1.project_host DESC,\n    t1.created_at DESC; -- 根據 created_at DESC 排序，確保選取的是該主持人的最新記錄",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        48,
+        1040
+      ],
+      "id": "5e653d22-b963-44f1-a1c3-391f864d8a7e",
+      "name": "取得不重複之合法教授資訊",
+      "credentials": {
+        "postgres": {
+          "id": "T3LSn3rixEiNn1wP",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "=【溫馨提醒】敬請您完成{{ $json.roc_date }}份研究計畫薪資流程，感謝您的協助。 [Gentle Reminder] Kindly complete the salary process for the {{ $json.ad_date }} research project. Thank you for your cooperation",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<title>研究計畫薪資流程溫馨提醒</title>\n</head>\n<body style=\"font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;\">\n  <div style=\"max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; background-color: #f9f9f9;\">\n    \n    <p>親愛的{{ $json.name }}助理，您好：</p>\n    <p>提醒您完成{{ $json.roc_date }}兼任助理薪資造冊作業。</p>\n    \n    <p style=\"background-color: #eee; padding: 10px; border-radius: 5px;\">\n      計畫編號： {{ $json.project_code }}<br>\n      計畫名稱： {{ $json.project_name }}\n    </p>\n\n    <p>請依照以下流程至 <a href=\"https://lms.ntpu.edu.tw/site/assistant\" style=\"color: #007bff; text-decoration: underline;\">「兼職人員保險管理系統」1.5兼職助理勞健保整合系統_登入網址</a> 操作， <strong>請勿自行造冊</strong>，謝謝您！</p>\n\n    <p style=\"font-weight: bold; margin-top: 20px; color: #0056b3;\">作業流程：</p>\n    <ol style=\"padding-left: 20px; margin: 0 0 20px 0;\">\n      <li style=\"margin-bottom: 10px;\"><strong>受聘助理：</strong> 登入系統 →「聘僱文件填報」→ 填寫{{ $json.roc_month }}份工時表／進度報告</li>\n      <li style=\"margin-bottom: 10px;\"><strong>受聘助理：</strong> 點選「送審」送交計畫主持人</li>\n      <li style=\"margin-bottom: 10px;\"><strong>計畫主持人：</strong> 登入「聘僱文件填報管理」→ 審核{{ $json.roc_month }}份資料</li>\n      <li style=\"margin-bottom: 10px;\"><strong>計畫主持人：</strong> 登入「計畫預算管理」→「每月薪資確認」→ 選擇{{ $json.roc_month }}份 → 點選「送彙整」</li>\n      <li style=\"margin-bottom: 10px;\"><strong>研發處：</strong> 統一造冊，約7–11個工作天內入帳</li>\n    </ol>\n      \n    <hr style=\"border: 0; border-top: 1px solid #ccc; margin: 20px 0;\">\n    \n    <p style=\"font-weight: bold;\">Dear {{ $json.name }} Assistant,</p>\n    <p>This is a reminder to assist your students in completing the {{ $json.ad_date }} salary processing for part-time research assistants.</p>\n    \n    <p style=\"background-color: #eee; padding: 10px; border-radius: 5px;\">\n      Project number：{{ $json.project_code }}<br>\n      Project name： {{ $json.project_name }}\n    </p>\n\n    <p>Please follow the steps below in the <a href=\"https://lms.ntpu.edu.tw/site/assistant\" style=\"color: #007bff; text-decoration: underline;\">Part-Time Personnel Insurance Management System</a>.</p>\n    <p>Thank you for your cooperation!</p>\n\n    <p style=\"font-weight: bold; margin-top: 20px; color: #0056b3;\">Procedure:</p>\n    <ol style=\"padding-left: 20px; margin: 0 0 20px 0;\">\n      <li style=\"margin-bottom: 10px;\"><strong>Assistant:</strong> log in → Employment Document Submission → Fill in {{ $json.ad_month }} Work Hours or Progress Report</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Assistant:</strong> click Submit for Review to send to the project PI</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Professor:</strong> log in to Employment Document Management → Reviews and approves {{ $json.ad_month }} records</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Professor:</strong> log in to Project Budget Management → Monthly Salary Confirmation → Select {{ $json.ad_month }} → Click Submit for Consolidation</li>\n      <li style=\"margin-bottom: 10px;\"><strong>The R&D Office:</strong> will finalize the salary sheets. Payments are expected within 7–11 working days.</li>\n    </ol>\n    \n    <hr style=\"border: 0; border-top: 1px solid #ccc; margin: 20px 0;\">\n    \n    <p>如有相關須協助事項，可來電研發處洽詢，聯繫分機：66162胡小姐</p>\n    <p style=\"text-align: right; margin-top: 30px;\">君華 敬上</p>\n    \n    <div style=\"margin-top: 30px; border: 1px dashed #aaa; padding: 15px; text-align: center; background-color: #fff;\">\n      <p style=\"font-weight: bold; color: #c00;\">[薪資造冊流程圖]</p>\n      <p><strong>五項流程，缺一不可，速速完成，薪水入手！敬請大家多多配合，謝謝！</strong></p>\n      <p style=\"font-size: 12px; color: #888;\">{{ $json.imageHtml }}</p>\n    </div>\n    \n  </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1024,
+        656
+      ],
+      "id": "1ed01f4b-f727-44d9-a085-296f03570c91",
+      "name": "寄給助理",
+      "webhookId": "7dcf397c-999f-4866-aecc-375c5368afa7",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LUdoGDAHUAlTGXAb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.host_email }}",
+        "subject": "=【溫馨提醒】敬請您完成{{ $json.roc_date }}份研究計畫薪資流程，感謝您的協助。 [Gentle Reminder] Kindly complete the salary process for the {{ $json.ad_date }} research project. Thank you for your cooperation",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<title>研究計畫薪資流程溫馨提醒</title>\n</head>\n<body style=\"font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;\">\n  <div style=\"max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; background-color: #f9f9f9;\">\n    \n    <p>親愛的{{ $json.project_host }}教授，您好：</p>\n    <p>提醒您完成{{ $json.roc_date }}兼任助理薪資造冊作業。</p>\n    \n    <p style=\"background-color: #eee; padding: 10px; border-radius: 5px;\">\n      計畫編號： (EXCEL-R欄[本校計畫代碼])<br>\n      計畫名稱： (EXCEL-S欄[計畫名稱])\n    </p>\n\n    <p>請依照以下流程至 <a href=\"https://lms.ntpu.edu.tw/site/assistant\" style=\"color: #007bff; text-decoration: underline;\">「兼職人員保險管理系統」1.5兼職助理勞健保整合系統_登入網址</a> 操作， <strong>請勿自行造冊</strong>，謝謝您！</p>\n\n    <p style=\"font-weight: bold; margin-top: 20px; color: #0056b3;\">作業流程：</p>\n    <ol style=\"padding-left: 20px; margin: 0 0 20px 0;\">\n      <li style=\"margin-bottom: 10px;\"><strong>受聘助理：</strong> 登入系統 →「聘僱文件填報」→ 填寫{{ $json.roc_month }}份工時表／進度報告</li>\n      <li style=\"margin-bottom: 10px;\"><strong>受聘助理：</strong> 點選「送審」送交計畫主持人</li>\n      <li style=\"margin-bottom: 10px;\"><strong>計畫主持人：</strong> 登入「聘僱文件填報管理」→ 審核{{ $json.roc_month }}份資料</li>\n      <li style=\"margin-bottom: 10px;\"><strong>計畫主持人：</strong> 登入「計畫預算管理」→「每月薪資確認」→ 選擇{{ $json.roc_month }}份 → 點選「送彙整」</li>\n      <li style=\"margin-bottom: 10px;\"><strong>研發處：</strong> 統一造冊，約7–11個工作天內入帳</li>\n    </ol>\n      \n    <hr style=\"border: 0; border-top: 1px solid #ccc; margin: 20px 0;\">\n    \n    <p style=\"font-weight: bold;\">Dear Professor {{ $json.project_host }},</p>\n    <p>This is a reminder to assist your students in completing the {{ $json.ad_date }} salary processing for part-time research assistants.</p>\n    \n    <p style=\"background-color: #eee; padding: 10px; border-radius: 5px;\">\n      Project number：(EXCEL-R欄[本校計畫代碼])<br>\n      Project name： (EXCEL-S欄[計畫名稱])\n    </p>\n\n    <p>Please follow the steps below in the <a href=\"https://lms.ntpu.edu.tw/site/assistant\" style=\"color: #007bff; text-decoration: underline;\">Part-Time Personnel Insurance Management System</a>.</p>\n    <p>Thank you for your cooperation!</p>\n\n    <p style=\"font-weight: bold; margin-top: 20px; color: #0056b3;\">Procedure:</p>\n    <ol style=\"padding-left: 20px; margin: 0 0 20px 0;\">\n      <li style=\"margin-bottom: 10px;\"><strong>Assistant:</strong> log in → Employment Document Submission → Fill in {{ $json.ad_month }} Work Hours or Progress Report</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Assistant:</strong> click Submit for Review to send to the project PI</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Professor:</strong> log in to Employment Document Management → Reviews and approves {{ $json.ad_month }} records</li>\n      <li style=\"margin-bottom: 10px;\"><strong>Professor:</strong> log in to Project Budget Management → Monthly Salary Confirmation → Select {{ $json.ad_month }} → Click Submit for Consolidation</li>\n      <li style=\"margin-bottom: 10px;\"><strong>The R&D Office:</strong> will finalize the salary sheets. Payments are expected within 7–11 working days.</li>\n    </ol>\n    \n    <hr style=\"border: 0; border-top: 1px solid #ccc; margin: 20px 0;\">\n    \n    <p>如有相關須協助事項，可來電研發處洽詢，聯繫分機：66162胡小姐</p>\n    <p style=\"text-align: right; margin-top: 30px;\">君華 敬上</p>\n    \n    <div style=\"margin-top: 30px; border: 1px dashed #aaa; padding: 15px; text-align: center; background-color: #fff;\">\n      <p style=\"font-weight: bold; color: #c00;\">[薪資造冊流程圖]</p>\n      <p><strong>五項流程，缺一不可，速速完成，薪水入手！敬請大家多多配合，謝謝！</strong></p>\n      <p style=\"font-size: 12px; color: #888;\">{{ $json.imageHtml }}</p>\n    </div>\n    \n  </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1024,
+        976
+      ],
+      "id": "42bbb38f-0a84-4b84-982d-33c238850afd",
+      "name": "寄給教授",
+      "webhookId": "7dcf397c-999f-4866-aecc-375c5368afa7",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LUdoGDAHUAlTGXAb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 讀取 Gmail 的插入圖片",
+        "height": 208,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "a6cd12fe-fff3-41aa-b160-94687af4522a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 使用 query 篩選資料庫資料\n",
+        "height": 368,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        816
+      ],
+      "typeVersion": 1,
+      "id": "f497b9bc-a71e-477d-9c7d-beb7f2cf30f8",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 將信件分批寄送給被篩選出的助理",
+        "height": 256,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        768,
+        592
+      ],
+      "typeVersion": 1,
+      "id": "afdf318a-b69f-4645-b533-842276b447e4",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 將信件分批寄送給被篩選出的教授",
+        "height": 256,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        768,
+        912
+      ],
+      "typeVersion": 1,
+      "id": "f6242c69-8dea-4a7d-aece-a4eff1305bf8",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1vAku9ZEdfjdnbL_pd6o8IObETVZIeNGm",
+          "mode": "list",
+          "cachedResultName": "image001.jpg",
+          "cachedResultUrl": "https://drive.google.com/file/d/1vAku9ZEdfjdnbL_pd6o8IObETVZIeNGm/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f499b150-ed3d-434a-a232-62f55546b19d",
+      "name": "下載圖片",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Snc90sSC3BGiWUOm",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 假設圖片資料儲存在二進位欄位 'data'\nconst binaryData = $input.item.binary.data;\n\n// 取得圖片的 MIME 類型 (Content-Type)。您可能需要根據實際情況修改。\nconst mimeType = binaryData.mimeType || 'image/png'; // 假設是 PNG\n\n// 將 Base64 數據轉換成 Data URI 格式\nconst base64String = binaryData.data;\n\n// 完整的 HTML Image Tag\nconst htmlImgTag = `<img src=\"data:${mimeType};base64,${base64String}\" alt=\"Embedded Image\">`;\n\n// 輸出到下一個節點\nreturn [\n  {\n    json: {\n      imageHtml: htmlImgTag, // 這是您需要的內嵌 HTML 標籤\n      mimeType: mimeType\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        0
+      ],
+      "id": "2d55d9e9-dd0b-4330-8cde-4dce5d4403fc",
+      "name": "圖片轉為可嵌入的模式"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        624
+      ],
+      "id": "d08a76be-da6b-4a5b-8afb-f6433852ad2c",
+      "name": "開始執行"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "ROC Date": {
+      "main": [
+        [
+          {
+            "node": "AD to ROC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ROC Month": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AD to ROC": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AD Date": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "AD Month": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items 1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "寄給助理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items 2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "寄給教授",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "取得合法助理資訊": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "取得不重複之合法教授資訊": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "寄給助理": {
+      "main": [
+        [
+          {
+            "node": "Wait 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "寄給教授": {
+      "main": [
+        [
+          {
+            "node": "Wait 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "下載圖片": {
+      "main": [
+        [
+          {
+            "node": "圖片轉為可嵌入的模式",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "圖片轉為可嵌入的模式": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "開始執行": {
+      "main": [
+        [
+          {
+            "node": "ROC Date",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AD Date",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ROC Month",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AD Month",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "取得合法助理資訊",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "取得不重複之合法教授資訊",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "下載圖片",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b9094053-f9d5-4e22-90fe-a7e085611a96",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "51d5f048ce4b3c83fed68a46f4699b8a7e0740eb91807ed56102dec49bf23ecb"
+  },
+  "id": "1mcUsgD5UhhNORfo",
+  "tags": []
+}
