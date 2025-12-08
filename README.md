@@ -35,6 +35,8 @@ n8n 技術文章
 * 各節點的類型和功能介紹
 * Credential 的介紹和設置
 * 簡易工作流的介紹與示範
+* 工作流的匯出
+* 工作流的重新導入
 
 ### 3. [資料庫的基本節構和功能](#database)
 
@@ -53,21 +55,15 @@ n8n 技術文章
 * 系統的執行結果
 * 可行的系統擴充和延伸
 
-### 6. 工作流的匯出與重新部屬
-
-* 工作流的匯出
-* 工作流的重新導入
-* Credential 的重新設置
-
-### 7. 結語：n8n 的校務價值和創新可能性
+### 6. 結語：n8n 的校務價值和創新可能性
 
 * 低程式碼和與AI結合的優勢
 * 未來可行的應用場景
 
-### 8. 附錄
+### 7. 附錄
 
-* 工作流1：Upload.json
-* 工作流2：Send.json
+* workflow 資料夾：系統的工作流
+* SQL script 資料夾：PostgreSQL 的 SQL Query
 
 
 
@@ -193,6 +189,7 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
 到此，安裝的步驟就全部完成了。
 
 
+
 <h2 id="introduction">n8n 的基本節點和工作流認識</h2>
 
 在使用 n8n 之前，我們需要先將 n8n 的容器打開，並透過瀏覽器來開啟 n8n 頁面。
@@ -258,6 +255,14 @@ n8n 有許多不同類型和功能的節點，我將從其中挑選幾個重要�
 * 功能：根據節點的設定，此節點可以當作輸入或輸出節點。
   * 作為輸入：Postgres 中有檢測到特定活動時自動觸發。
   * 作為輸出：此節點可向 Postgres 資料庫做多項變動，例如新增一行資料、刪除特定資料、執行特定 SQL query 等。
+ 
+**6. Code**
+
+<img width="219" height="193" alt="image" src="https://github.com/user-attachments/assets/acca06e0-5eef-40ff-9dbf-394f263e7c54" />
+<img width="469" height="87" alt="image" src="https://github.com/user-attachments/assets/4c539a94-350d-4ccc-bb1d-960adedc2337" />
+
+* 類型：核心/邏輯控制節點
+* 功能：算是最萬用的節點，藉由此節點可以用 Javascript/Python 程式來執行一般節點做不到的事情。
 
 ### Credential 的介紹和設置
 
@@ -376,6 +381,23 @@ Google sheet 和 Google drive 的 Credential 可直接使用**同一個**用戶�
 這裡我們創建一個簡單的工作流，用以示範各節點如何運行。
 
 # 待完成
+
+### 工作流的匯出
+
+在 n8n，匯出工作流是一件非常簡單的事，只需要一個按鍵便可以搞定。
+
+在工作流頁面中，右上角 **Save** 旁有 **...** 的按鈕，接著選擇 **Download** 便可將工作流下載下來了。下載下來的工作流將會以 **json** 的格式儲存。
+
+<img width="520" height="398" alt="image" src="https://github.com/user-attachments/assets/904c85bc-87fb-4753-bdef-14c0582c229b" />
+
+### 工作流的重新導入
+
+導入 n8n 工作流同樣是一件只需要一個按鍵便能搞定的事情。你也可以在不同的裝置上導入工作流，這便是 n8n 的高移植性。
+
+在空白的工作流頁面中，同樣選擇 **...** 按鈕，這次選擇 **Import from File**，接著選擇下載下來的 **json** 檔，便可重新導入工作流。
+
+**⚠️注意：重新導入工作流後，需要 Credential 的節點皆會預設為未選擇 Credential，需要點入每個需要 Credential 的節點重新選擇。若將工作流導入到新裝置，請確保有重新建立各個 Credential。**
+
 
 
 <h2 id="database">資料庫的基本節構和功能</h2>
