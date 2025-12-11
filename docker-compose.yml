@@ -1,0 +1,54 @@
+services:
+  # 1. PostgreSQL 資料庫服務
+  postgres:
+    image: postgres:16 # 推薦使用特定版本，而不是 latest
+    restart: always
+    ports:
+      - "5432:5432"
+
+    environment:
+      # ⚠️ 數據庫連接憑證，n8n 容器將使用這些變數連接
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=schooldb
+      
+    volumes:
+      # 持久化儲存資料庫數據
+      - postgres_data:/var/lib/postgresql/data
+      
+  # 2. n8n 應用服務
+  n8n:
+    image: n8nio/n8n
+    restart: always
+    ports:
+      - "5678:5678"
+      
+    environment:
+      # ⚠️ n8n 使用資料庫的配置 (重要!)
+      - DB_TYPE=postgres
+      # Host 必須使用 PostgreSQL 服務的名稱 'postgres'
+      - DB_HOST=postgres
+      - DB_USER=myuser
+      - DB_PASSWORD=mypassword
+      - DB_DATABASE=schooldb
+      
+      # n8n 運行配置
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      # 解決中文亂碼的環境變數
+      - LANG=C.UTF-8 
+      - LC_ALL=C.UTF-8
+      - TZ=Asia/Taipei
+      
+    volumes:
+      # 持久化儲存 n8n 工作流程和憑證
+      - n8n_data:/home/node/.n8n
+      # 確保 n8n 服務在資料庫服務啟動後才啟動
+    depends_on:
+      - postgres
+
+# 3. 定義持久化儲存 Volume
+volumes:
+  postgres_data:
+  n8n_data:
