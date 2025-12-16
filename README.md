@@ -174,7 +174,14 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
 
 剛剛也有提及，指令變數在容器創建之後便無法變更，所以我們需要重建容器來連接容器之間的網路。
 
-輸入以下指令：
+若容器處於開啟狀態，先輸入以下指令：
+
+    docker stop n8n
+    docker stop PostgreSQL-school
+
+這兩個指令將分別關閉名為 "n8n" 和 "PostgreSQL-school" 的容器。
+
+接著輸入以下指令：
 
     docker rm n8n
     docker rm PostgreSQL-school
@@ -183,9 +190,9 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
 
 接著輸入原本創建 n8n 和 PostgreSQL 容器的指令，但在裡面再加上 "--network my_internal_net"
 
-    docker run --name n8n --network my_internal_net -p 5678:5678 -v n8n-file -d n8nio/n8n
+    docker run --name n8n --network my_internal_net -p 5678:5678 -v n8n_data:/home/node/.n8n -d n8nio/n8n
     
-    docker run --name PostgreSQL-school --network my_internal_net -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=schooldb -p 5432:5432 -v postgres-data -d postgres
+    docker run --name PostgreSQL-school --network my_internal_net -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=schooldb -p 5432:5432 -v postgres_data -d postgres
 
 **⚠️注意：不可將變數設在 -d 之後，否則開啟容器時會出錯。**
 
