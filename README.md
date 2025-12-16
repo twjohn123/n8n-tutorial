@@ -108,13 +108,15 @@ n8n 是一套開源 (Open Source) 的工作流程自動化工具。它的核心�
 
 首先打開 Windows 的**命令提示字元** (可以在搜尋欄中輸入cmd來開啟) ，接著輸入以下指令：
 
-    docker run --name n8n -p 5678:5678 -v n8n-file -d n8nio/n8n
+    docker volume create n8n_data
+    docker run --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n -d n8nio/n8n
 
 以下為指令的解析：
+* docker volume create n8n_data：創建一個名為 n8n_data 的 volume。
 * docker run：Docker 的基本指令，用於建立並啟動容器。
 * --name n8n：用於指定容器名稱，在此設為 "n8n"。
 * -p 5678:5678：用於連接埠映射 (Port mapping)，預設為5678:5678，不建議更動。
-* -v n8n-file：用於指定 Volume 儲存位置，可設置 Volume 名稱或絕對路徑。設置為名稱時將由 Docker 來管理位置，並使用 Docker 來找取資料。設置為絕對路徑時則可直接從路徑中找取資料。在此使用 "n8n-file" 名稱。
+* -v n8n_data:/home/node/.n8n：使用 n8n_data 作為容器的 volume，並使用 /home/node/.n8n 路徑來儲存資料，此處不得更動。
 * -d n8nio/n8n：用於指定運行方式與映像檔，在此為使用 "n8nio/n8n" 映像檔。
 
 **⚠️注意：以上指令變數在容器創建之後皆無法再次變更。**
@@ -137,9 +139,11 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
 
 首先一樣首先打開 Windows 的**命令提示字元** (可以在搜尋欄中輸入cmd來開啟)，接著輸入以下指令：
 
-    docker run --name PostgreSQL-school -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=schooldb -p 5432:5432 -v postgres-data -d postgres
+    docker volume create postgres_data
+    docker run --name PostgreSQL-school -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=schooldb -p 5432:5432 -v postgres_data -d postgres
 
 以下為指令的解析：
+* docker volume create postgres_data：創建一個名為 postgres_data 的 volume。
 * docker run：Docker 的基本指令，用於建立並啟動容器。
 * --name PostgreSQL-school：用於指定容器名稱，在此設為 "PostgreSQL-school"。
 * -e：環境變數，用於設置不同的環境數值。
@@ -147,7 +151,7 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
   * POSTGRES_PASSWORD=mypassword：POSTGRES_PASSWORD 用於設定密碼，在此設為 "mypassword"。
   * POSTGRES_DB=schooldb：POSTGRES_DB 用於設定和命名資料庫，在此設為 "schooldb"。
 * -p 5432:5432：用於連接埠映射 (Port mapping)，預設為5678:5678，不建議更動。
-* -v postgres-data：用於指定 Volume 儲存位置，可設置 Volume 名稱或絕對路徑。設置為名稱時將由 Docker 來管理位置，並使用 Docker 來找取資料。設置為絕對路徑時則可直接從路徑中找取資料。在此使用 "postgres-data" 名稱。
+* -v postgres_data：使用 postgres_data 作為容器的 volume。
 * -d postgres：用於指定運行方式與映像檔，在此為使用 "postgres" 映像檔。
 
 **⚠️注意：以上指令變數在容器創建之後皆無法再次變更。**
