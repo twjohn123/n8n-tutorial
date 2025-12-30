@@ -140,7 +140,7 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
 首先一樣首先打開 Windows 的**命令提示字元** (可以在搜尋欄中輸入cmd來開啟)，接著輸入以下指令：
 
     docker volume create postgres_data
-    docker run --name PostgreSQL-school -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=schooldb -p 5432:5432 -v postgres_data -d postgres
+    docker run --name PostgreSQL-school -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=schooldb -p 5432:5432 -v postgres_data:/var/lib/postgresql/data -d postgres
 
 以下為指令的解析：
 * docker volume create postgres_data：創建一個名為 postgres_data 的 volume。
@@ -151,7 +151,7 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
   * POSTGRES_PASSWORD=mypassword：POSTGRES_PASSWORD 用於設定密碼，在此設為 "mypassword"。
   * POSTGRES_DB=schooldb：POSTGRES_DB 用於設定和命名資料庫，在此設為 "schooldb"。
 * -p 5432:5432：用於連接埠映射 (Port mapping)，預設為5678:5678，不建議更動。
-* -v postgres_data：使用 postgres_data 作為容器的 volume。
+* -v postgres_data:/var/lib/postgresql/data：使用 postgres_data 作為容器的 volume，並使用 /var/lib/postgresql/data 路徑來儲存資料，此處不得更動。
 * -d postgres：用於指定運行方式與映像檔，在此為使用 "postgres" 映像檔。
 
 **⚠️注意：以上指令變數在容器創建之後皆無法再次變更。**
@@ -192,7 +192,7 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
 
     docker run --name n8n --network my_internal_net -p 5678:5678 -v n8n_data:/home/node/.n8n -d n8nio/n8n
     
-    docker run --name PostgreSQL-school --network my_internal_net -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=schooldb -p 5432:5432 -v postgres_data -d postgres
+    docker run --name PostgreSQL-school --network my_internal_net -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=schooldb -p 5432:5432 -v postgres_data:/var/lib/postgresql/data -d postgres
 
 **⚠️注意：不可將變數設在 -d 之後，否則開啟容器時會出錯。**
 
