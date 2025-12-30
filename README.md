@@ -151,7 +151,7 @@ PostgreSQL 是一個功能強大、穩定且高度符合標準的開放原始碼
   * POSTGRES_PASSWORD=mypassword：POSTGRES_PASSWORD 用於設定密碼，在此設為 "mypassword"。
   * POSTGRES_DB=schooldb：POSTGRES_DB 用於設定和命名資料庫，在此設為 "schooldb"。
 * -p 5432:5432：用於連接埠映射 (Port mapping)，預設為5678:5678，不建議更動。
-* -v postgres_data:/var/lib/postgresql/data：使用 postgres_data 作為容器的 volume，並使用 /var/lib/postgresql 路徑來儲存資料，此處不得更動。
+* -v postgres_data:/var/lib/postgresql：使用 postgres_data 作為容器的 volume，並使用 /var/lib/postgresql 路徑來儲存資料，此處不得更動。
 * -d postgres：用於指定運行方式與映像檔，在此為使用 "postgres" 映像檔。
 
 **⚠️注意：以上指令變數在容器創建之後皆無法再次變更。**
