@@ -578,17 +578,16 @@ UNION ALL
   * 等待所有分支完成：即為 "Merge"，此處作為工作留的檢查點，所有前者的分支都要執行完成才會執行下一步。
   
 * 將資料庫中的資料交給 AI (Google Gemini) 做處理
-  * 提取資料庫資料：這個節點會提取來自 part_time_main_info 和 project_code_info 的資料。
-    * part_time_main_info 會提取其 **id** 和 **project_code** 欄位。
-    * project_code_info 會提取其 **corresponding_project** 和 **code_filter_condition** 欄位。
-    * 提取完成後會將兩者資料結合，並交送給下一個節點。
-  * 將所有資料整合並建立prompt：Javascript 節點。這裡的 Javascript 會將前面所收到的資料全部整合，並且建立提示詞 (prompt)，準備傳送給 AI 做處理。
-  * AI 篩選計畫代碼：為 Message a Model 模式的 Google Gemini 節點，這裡的 Model 選擇 "**models/gemini-2.5-flash**"，Prompt 則直接貼上上個 Javascript 節點的輸出。此節點預期會輸出包含 **id** 和 **corresponding_project** 整合而成的 json 陣列。
+  * 提取 project_code_info 資料庫資料：這個節點會提取來自 part_time_main_info 的 id 和 code_filter_condition 欄位
+  * 將資料整合：Javascript 節點。這裡的 Javascript 會將前面所收到的資料整合為一個字串輸出，作為給 AI (Gemini) 的輸入。
+  * AI 建立 Query 語句：為 Message a Model 模式的 Google Gemini 節點，這裡的 Model 選擇 "**models/gemini-2.5-flash**"，Prompt 則輸入任務內容、範例輸入、範例輸出和上個 Javascript 節點的輸出。此節點預期會輸出包含 **id** 和 **對應 SQL LIKE 語句** 整合而成的 json 陣列。
   * 提取AI回應並分割物件：Javascript 節點。這裡的 Javascript 會將前面 AI (Google Gemini) 的回應進行拆解，並將其分割為多個物件，以便後續處理。
   * 轉為SQL物件：Javascript 節點。這裡的 Javascript 會整合前個節點輸出的資料並製作成可被 query 閱讀的物件，用以將資料傳回資料庫。
-  * 篩選計畫代碼和日期 & 輸入計畫名稱：為 Execute Query 模式的 Postgres 節點。此節點會執行以下的動作：
-    * 確認合法日期：start_date 必須在 CURRENT_DATE (今天) 之前；end_date 必須在該月之內 (範例：11月 -> 11/1 ~ 11/30)。
-    * 根據 AI 的回應，配合合法日期限制，將特定欄位資料 (由 AI 回傳的 **id** 決定) 嵌入計畫名稱，並將該欄位的 **send_email_flag 設為 true**，代表此欄位的對象會被寄送 Gmail。
+  * 存入 Query 語句：為 Execute Query 模式的 Postgres 節點。此節點會藉由前面節點的輸出，將對應的 SQL LIKE 語句根據 id 存入對應 row 的 query_filter 欄位。 
+  * 篩選並存入計畫名稱：為 Execute Query 模式的 Postgres 節點。此節點將使用上個節點在 project_code_info 中所存入的 query_filter，使用 SQL LIKE 的資料庫篩選資料方式，將 part_time_main_info 中的對應計畫代碼的 row 篩選出來，並在該 row 中的 project_name 欄位填入對應的計畫名稱。
+  * 篩選寄送郵件對象：為 Execute Query 模式的 Postgres 節點。此節點將執行以下的任務：
+    * 確認合法日期：start_date 必須在該月的最後一天之前 (範例： <= 11/30)；end_date 必須在該月的第一天之後 (範例： => 11/1)。
+    * 確認在 part_time_main_info 中，該 row 的 project_name 是否為 NULL，並配合合法日期限制，將該欄位的 **send_email_flag 設為 true**，代表此欄位的對象會被寄送 Gmail。
 
 到此，我們已探討完 1_Upload 工作流的運作方式。接著，我們來看看下一個工作流。
  
@@ -601,9 +600,8 @@ UNION ALL
 這裡一樣要記得先把每個未選擇 Credential 的節點 (節點右下角有紅色警示符號的) 都重新設置對應的 Credential。
 
 接下來一樣介紹對應的節點：
-* 讀取 Gmail 的插入圖片
+* 讀取 Gmail 的插入圖片：
   * 下載圖片：在這裡請先把 image 資料夾中的圖片 **mail_embed_image.jpg** 上傳到自己的 Google drive (雲端硬碟) 中，接著一樣將 **File -> From list** 後的檔案調整為 **mail_embed_image.jpg**，此節點將把此檔案 (jpg圖檔) 下載下來並交給下一個節點。
-  * 圖片轉為可嵌入的模式：此 javascript 節點會將傳入的圖片做 base64 處理，使其可以以 html 的表示法直接嵌入到 Gmail 內文中。
 
 * 創建各個日期格式：
   * Date & Time
@@ -644,6 +642,7 @@ UNION ALL
 <h2 id="conclusion">結語：n8n 的校務價值和創新可能性</h2>
 
 ### 待完成
+此工作流將可大幅降低執行
 
 <h2 id="appendix">附錄</h2>
 
